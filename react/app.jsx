@@ -3,12 +3,50 @@
 var React = require('react'),
     D = React.DOM;
 
-var companyNames = "Consciousness, Love, React, Green, Imagine, Thought, Heart, App, Care, Web";
+var companyNames = [
+    "Consciousness",
+    "Love",
+    "React",
+    "Green",
+    "Imagine",
+    "Thought",
+    "Heart",
+    "App",
+    "Care",
+    "Web",
+    "foxyline",
+    "foxyware",
+    "featherath",
+    "popmachine",
+    "animalware",
+    "animooless",
+    "plantify",
+    "sproutanapp",
+    "webiland",
+    "planect",
+    "planex",
+    "planless",
+    "hobful",
+    "jabless",
+    "plopy",
+    "flopy",
+    "diskful",
+    "economore",
+    "inapt",
+    "cloudless",
+    "cloppy",
+    "klaudmess",
+    "inaklud",
+    "apperclass",
+    "uppleklass",
+    "appernity",
+    "appurself",
+];
 
-var MyUL = React.createClass({
+var NameList = React.createClass({
     render: function () {
-        var stuff = D.ul(null,
-            companyNames.split(",").reverse().map(function (x) {
+        var stuff = D.ol(null,
+            companyNames.map(function (x) {
                 return D.li(null, x)
             })
         );
@@ -26,11 +64,8 @@ var App = React.createClass({
                     <link rel="stylesheet" type="text/css" href="/stylesheets/style.css"/>
                 </head>
                 <body>
-                    <h1>Hello, this is React!</h1>
-                    <h2>OK!</h2>
-                    <p>ok</p>
-                    <p>123</p>
-                    <MyUL/>
+                    <h1>Name Options:</h1>
+                    <NameList/>
                 </body>
             </html>
         )
