@@ -40,7 +40,7 @@ var companyNames = [
     "apperclass",
     "uppleklass",
     "appernity",
-    "appurself",
+    "appurself"
 ];
 
 var NameList = React.createClass({
@@ -57,6 +57,16 @@ var NameList = React.createClass({
 });
 
 var App = React.createClass({
+    getInitialState: function () {
+        return {
+            counter: 1
+        }
+    },
+
+    onClick: function (e) {
+        this.setState({counter: this.state.counter + 1});
+    },
+
     render: function () {
         return (
             <html>
@@ -64,8 +74,11 @@ var App = React.createClass({
                     <link rel="stylesheet" type="text/css" href="/stylesheets/style.css"/>
                 </head>
                 <body>
+                    <p>{this.state.counter}</p>
+                    <button onClick={this.onClick}>Increment</button>
                     <h1>Name Options:</h1>
                     <NameList/>
+                    <script src="/javascripts/bundle.js"></script>
                 </body>
             </html>
         )

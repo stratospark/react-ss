@@ -11,7 +11,7 @@ router.get('/', function (req, res) {
 });
 
 router.get("/react", function (req, res) {
-    res.end(React.renderComponentToStaticMarkup(App()));
+    res.end(React.renderComponentToString(App()));
 });
 
 module.exports = router;
