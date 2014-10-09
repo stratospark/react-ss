@@ -4,3 +4,5 @@ var React = require("react"),
 window.app = (function() {
     return React.renderComponent(<App/>, document.body);
 })();
+
+window.React = React;

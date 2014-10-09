@@ -1,7 +1,8 @@
 var gulp = require("gulp"),
     browserSync = require("browser-sync"),
-    nodemon = require("gulp-nodemon");
-
+    nodemon = require("gulp-nodemon"),
+    browserify = require("gulp-browserify"),
+    rename = require("gulp-rename");
 
 gulp.task("default", ["browser-sync"]);
 
@@ -24,7 +25,21 @@ gulp.task("nodemon", function (cb) {
     });
 });
 
-gulp.task("browser-sync", ["nodemon"], function () {
+gulp.task("build", function () {
+    gulp.src("browser/bootstrap.jsx", {read: false})
+        .pipe(browserify({
+            transform: ["reactify"],
+            debug: true
+        }))
+        .pipe(rename("bundle.js"))
+        .pipe(gulp.dest("public/javascripts"));
+});
+
+gulp.task("browserify", function () {
+    gulp.watch(["react/**/*.*", "browser/**/*.*"], ["build"]);
+});
+
+gulp.task("browser-sync", ["browserify", "nodemon"], function () {
     browserSync.init({
         files: ['public/**/*.*'],
         proxy: 'http://localhost:3000',
