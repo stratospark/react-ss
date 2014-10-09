@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
 
 var React = require('react'),
-    D = React.DOM;
+    NameList = require('./components/NameList.jsx');
 
 var companyNames = [
     "Consciousness",
@@ -43,19 +43,6 @@ var companyNames = [
     "appurself"
 ];
 
-var NameList = React.createClass({
-    render: function () {
-        var stuff = D.ol(null,
-            companyNames.map(function (x) {
-                return D.li(null, x)
-            })
-        );
-        return (
-            stuff
-        );
-    }
-});
-
 var App = React.createClass({
     getInitialState: function () {
         return {
@@ -77,7 +64,7 @@ var App = React.createClass({
                     <p>{this.state.counter}</p>
                     <button onClick={this.onClick}>Increment</button>
                     <h1>Name Options:</h1>
-                    <NameList/>
+                    <NameList names={companyNames}/>
                     <script src="/javascripts/bundle.js"></script>
                 </body>
             </html>
