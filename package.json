@@ -3,8 +3,23 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "test": "jest"
   },
+
+  "jest": {
+    "unmockedModulePathPatterns": [
+      "./node_modules"
+    ],
+    "testPathIgnorePatterns": [
+      "./node_modules"
+    ],
+    "testPathDirs": [
+      "./__tests__"
+    ],
+    "scriptPreprocessor": "./preprocessor.js"
+  },
+
   "dependencies": {
     "body-parser": "~1.8.1",
     "cookie-parser": "~1.3.3",
@@ -14,6 +29,7 @@
     "morgan": "~1.3.0",
     "node-jsx": "^0.11.0",
     "react": "^0.11.2",
+    "react-addons": "^0.9.0",
     "serve-favicon": "~2.1.3"
   },
   "devDependencies": {
@@ -21,8 +37,11 @@
     "browserify": "^6.0.3",
     "gulp": "^3.8.8",
     "gulp-browserify": "^0.5.0",
+    "gulp-jest": "^0.2.1",
     "gulp-nodemon": "^1.0.4",
     "gulp-rename": "^1.2.0",
+    "jest-cli": "^0.1.18",
+    "react-tools": "^0.11.2",
     "reactify": "^0.14.0"
   }
 }

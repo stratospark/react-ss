@@ -2,7 +2,8 @@ var gulp = require("gulp"),
     browserSync = require("browser-sync"),
     nodemon = require("gulp-nodemon"),
     browserify = require("gulp-browserify"),
-    rename = require("gulp-rename");
+    rename = require("gulp-rename"),
+    jest = require("gulp-jest");
 
 gulp.task("default", ["browser-sync"]);
 
@@ -46,4 +47,27 @@ gulp.task("browser-sync", ["browserify", "nodemon"], function () {
         port: 4000,
         browser: ['google chrome']
     });
+});
+
+gulp.task("jest-watch", ["jest"], function () {
+    gulp.watch(["__tests__/*"], ["jest"]);
+});
+
+gulp.task("jest", function () {
+    return gulp.src("__tests__").pipe(jest({
+        scriptPreprocessor: "../preprocessor.js",
+        unmockedModulePathPatterns: [
+            "../node_modules/react"
+        ],
+        testPathDirs: ["../__tests__"],
+        testPathIgnorePatterns: [
+            "../node_modules"
+        ]
+        //moduleFileExtensions: [
+        //    "js",
+        //    "jsx",
+        //    "json",
+        //    "react"
+        //]
+    }));
 });
