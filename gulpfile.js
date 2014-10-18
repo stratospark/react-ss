@@ -5,9 +5,13 @@ var gulp = require("gulp"),
     rename = require("gulp-rename"),
     jest = require("gulp-jest");
 
-gulp.task("default", ["browser-sync"]);
+gulp.task("default", ["build", "browser-sync"]);
 
-var BROWSER_SYNC_RELOAD_DELAY = 400;
+
+var browserSyncReloadDelayMs = process.env.BROWSER_SYNC_RELOAD_DELAY_MS ?
+    process.env.BROWSER_SYNC_RELOAD_DELAY_MS : 400;
+
+console.log("browserSyncReloadDelayMs", browserSyncReloadDelayMs);
 
 gulp.task("nodemon", function (cb) {
     var called = false;
@@ -22,7 +26,7 @@ gulp.task("nodemon", function (cb) {
             browserSync.reload({
                 stream: false
             });
-        }, BROWSER_SYNC_RELOAD_DELAY);
+        }, browserSyncReloadDelayMs);
     });
 });
 
