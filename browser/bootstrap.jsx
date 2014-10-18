@@ -1,8 +1,8 @@
 var React = require("react"),
-    App = require("../react/app.jsx");
+    routes = require("../react/app.jsx").routes;
 
 window.app = (function() {
-    return React.renderComponent(<App/>, document.body);
+    return React.renderComponent(routes, document);
 })();
 
 window.React = React;

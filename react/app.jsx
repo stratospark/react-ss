@@ -1,71 +1,23 @@
 /** @jsx React.DOM */
 
 var React = require('react'),
-    NameList = require('./components/NameList.jsx');
+    About = require('./routes/About.jsx'),
+    Names = require('./routes/Names.jsx');
 
-var Button = require("react-bootstrap").Button,
-    ButtonToolbar = require("react-bootstrap").ButtonToolbar,
-    Grid = require("react-bootstrap").Grid,
+var Routes = require("react-router").Routes,
+    Route = require("react-router").Route,
+    DefaultRoute = require("react-router").DefaultRoute,
+    Link = require("react-router").Link;
+
+var Grid = require("react-bootstrap").Grid,
     Row = require("react-bootstrap").Row,
     Col = require("react-bootstrap").Col,
     Nav = require("react-bootstrap").Nav,
     NavItem = require("react-bootstrap").NavItem;
 
-var companyNames = [
-    "Consciousness",
-    "Love",
-    "React",
-    "Green",
-    "Imagine",
-    "Thought",
-    "Heart",
-    "App",
-    "Care",
-    "Web",
-    "foxyline",
-    "foxyware",
-    "featherath",
-    "popmachine",
-    "animalware",
-    "animooless",
-    "plantify",
-    "sproutanapp",
-    "webiland",
-    "planect",
-    "planex",
-    "planless",
-    "hobful",
-    "jabless",
-    "plopy",
-    "flopy",
-    "diskful",
-    "economore",
-    "inapt",
-    "cloudless",
-    "cloppy",
-    "klaudmess",
-    "inaklud",
-    "apperclass",
-    "uppleklass",
-    "appernity",
-    "appurself"
-];
+
 
 var App = React.createClass({
-    getInitialState: function () {
-        return {
-            counter: 1
-        }
-    },
-
-    increment: function (e) {
-        this.setState({counter: this.state.counter + 1});
-    },
-
-    decrement: function (e) {
-        this.setState({counter: this.state.counter - 1});
-    },
-
     render: function () {
         return (
             <html>
@@ -77,23 +29,17 @@ var App = React.createClass({
 
                     <Grid>
                         <Row>
-                            <Col sm={3} md={3} class="sidebar">
+                            <Col sm={3} md={3} className="sidebar">
                                 <Nav bsStyle="pills" stacked activeKey={1}>
-                                    <NavItem key={1} href="/home">Names</NavItem>
-                                    <NavItem key={2} title="Item">TBD</NavItem>
-                                    <NavItem key={3} disabled={true}>TBD</NavItem>
+                                    <li><Link to="about">About</Link></li>
+                                    <li><Link to="names">Names</Link></li>
+                                    <NavItem key={3} disabled={true}>Contact</NavItem>
                                 </Nav>
 
                             </Col>
                             <Col sm={9} md={9}>
-                                <ButtonToolbar>
-                                    <Button bsStyle="primary" bsSize="large" onClick={this.decrement}>Decrement</Button>
-                                    <Button bsSize="large" onClick={this.increment}>Increment</Button>
-                                    <span className="counter">{this.state.counter}</span>
-                                </ButtonToolbar>
+                                <this.props.activeRouteHandler/>
 
-                                <h1>Name Options:</h1>
-                                <NameList names={companyNames}/>
                             </Col>
 
                         </Row>
@@ -107,4 +53,17 @@ var App = React.createClass({
     }
 });
 
-module.exports = App;
+var routes = (
+    <Routes location="hash">
+        <Route name="app" path="/" handler={App}>
+            <Route name="about" handler={About} />
+            <Route name="names" handler={Names} />
+            <DefaultRoute handler={About} />
+        </Route>
+    </Routes>
+);
+
+module.exports = {
+    App: App,
+    routes: routes
+};
