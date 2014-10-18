@@ -6,7 +6,6 @@
     "start": "node ./bin/www",
     "test": "jest"
   },
-
   "jest": {
     "unmockedModulePathPatterns": [
       "./node_modules"
@@ -19,7 +18,6 @@
     ],
     "scriptPreprocessor": "./preprocessor.js"
   },
-
   "dependencies": {
     "body-parser": "~1.8.1",
     "cookie-parser": "~1.3.3",
@@ -30,6 +28,7 @@
     "node-jsx": "^0.11.0",
     "react": "^0.11.2",
     "react-addons": "^0.9.0",
+    "react-bootstrap": "^0.12.0",
     "serve-favicon": "~2.1.3"
   },
   "devDependencies": {
