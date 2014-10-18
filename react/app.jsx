@@ -1,6 +1,7 @@
 /** @jsx React.DOM */
 
 var React = require('react'),
+    CSSTransitionGroup = require('react/lib/ReactCSSTransitionGroup'),
     About = require('./routes/About.jsx'),
     Names = require('./routes/Names.jsx');
 
@@ -14,7 +15,6 @@ var Grid = require("react-bootstrap").Grid,
     Col = require("react-bootstrap").Col,
     Nav = require("react-bootstrap").Nav,
     NavItem = require("react-bootstrap").NavItem;
-
 
 
 var App = React.createClass({
@@ -31,15 +31,20 @@ var App = React.createClass({
                         <Row>
                             <Col sm={3} md={3} className="sidebar">
                                 <Nav bsStyle="pills" stacked activeKey={1}>
-                                    <li><Link to="about">About</Link></li>
-                                    <li><Link to="names">Names</Link></li>
+                                    <li>
+                                        <Link to="about">About</Link>
+                                    </li>
+                                    <li>
+                                        <Link to="names">Names</Link>
+                                    </li>
                                     <NavItem key={3} disabled={true}>Contact</NavItem>
                                 </Nav>
 
                             </Col>
                             <Col sm={9} md={9}>
-                                <this.props.activeRouteHandler/>
-
+                                <CSSTransitionGroup transitionName="example">
+                                    <this.props.activeRouteHandler/>
+                                </CSSTransitionGroup>
                             </Col>
 
                         </Row>
@@ -56,8 +61,8 @@ var App = React.createClass({
 var routes = (
     <Routes location="hash">
         <Route name="app" path="/" handler={App}>
-            <Route name="about" handler={About} />
-            <Route name="names" handler={Names} />
+            <Route name="about" handler={About} addHandlerKey={true}/>
+            <Route name="names" handler={Names} addHandlerKey={true} />
             <DefaultRoute handler={About} />
         </Route>
     </Routes>
