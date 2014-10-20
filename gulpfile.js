@@ -4,7 +4,8 @@ var gulp = require("gulp"),
     browserify = require("gulp-browserify"),
     rename = require("gulp-rename"),
     jest = require("gulp-jest"),
-    sass = require("gulp-sass");
+    sass = require("gulp-sass"),
+    sourcemaps = require("gulp-sourcemaps");
 
 gulp.task("default", ["build", "browser-sync"]);
 
@@ -32,8 +33,11 @@ gulp.task("nodemon", function (cb) {
 });
 
 gulp.task("scss", function () {
+    // TODO: only include sourcemaps in dev env, not prod.
     gulp.src("./scss/*.scss")
+        .pipe(sourcemaps.init())
         .pipe(sass())
+        .pipe(sourcemaps.write())
         .pipe(gulp.dest("./public/stylesheets/"));
 });
 
