@@ -5,7 +5,8 @@ var gulp = require("gulp"),
     rename = require("gulp-rename"),
     jest = require("gulp-jest"),
     sass = require("gulp-sass"),
-    sourcemaps = require("gulp-sourcemaps");
+    sourcemaps = require("gulp-sourcemaps"),
+    plumber = require("gulp-plumber");
 
 gulp.task("default", ["build", "browser-sync"]);
 
@@ -20,7 +21,7 @@ gulp.task("nodemon", function (cb) {
     return nodemon({
         script: "bin/www",
         ext: "js jsx",
-        watch: ["react/**", "./routes/**", "app.js"]
+        watch: ["react/**", "routes/**", "app.js"]
     }).on("start", function onStart() {
         if (!called) cb();
         called = true;
@@ -36,6 +37,7 @@ gulp.task("nodemon", function (cb) {
 gulp.task("scss", function () {
     // TODO: only include sourcemaps in dev env, not prod.
     gulp.src("./scss/*.scss")
+        .pipe(plumber())
         .pipe(sourcemaps.init())
         .pipe(sass())
         .pipe(sourcemaps.write())
@@ -48,6 +50,7 @@ gulp.task("scss-watch", function () {
 
 gulp.task("build", function () {
     gulp.src("browser/bootstrap.jsx", {read: false})
+        .pipe(plumber())
         .pipe(browserify({
             transform: ["reactify"],
             debug: true
@@ -65,7 +68,13 @@ gulp.task("browser-sync", ["browserify", "scss-watch", "nodemon"], function () {
         files: ['public/**/*.*'],
         proxy: 'http://localhost:3000',
         port: 4000,
-        browser: ['google chrome']
+        browser: ['google chrome'],
+        ghostMode: {
+            clicks: true,
+            location: true,
+            forms: true,
+            scroll: true
+        }
     });
 });
 
