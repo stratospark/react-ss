@@ -22,7 +22,7 @@ var App = React.createClass({
         return (
             <html>
                 <head>
-                    <link rel="stylesheet" type="text/css" href="/stylesheets/style.css"/>
+                    <link rel="stylesheet" type="text/css" href="/stylesheets/styles.css"/>
                     <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
                 </head>
                 <body>

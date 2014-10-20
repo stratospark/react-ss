@@ -3,7 +3,8 @@ var gulp = require("gulp"),
     nodemon = require("gulp-nodemon"),
     browserify = require("gulp-browserify"),
     rename = require("gulp-rename"),
-    jest = require("gulp-jest");
+    jest = require("gulp-jest"),
+    sass = require("gulp-sass");
 
 gulp.task("default", ["build", "browser-sync"]);
 
@@ -30,6 +31,16 @@ gulp.task("nodemon", function (cb) {
     });
 });
 
+gulp.task("scss", function () {
+    gulp.src("./scss/*.scss")
+        .pipe(sass())
+        .pipe(gulp.dest("./public/stylesheets/"));
+});
+
+gulp.task("scss-watch", function () {
+    gulp.watch(["./scss/*.scss"], ["scss"]);
+});
+
 gulp.task("build", function () {
     gulp.src("browser/bootstrap.jsx", {read: false})
         .pipe(browserify({
@@ -44,7 +55,7 @@ gulp.task("browserify", function () {
     gulp.watch(["react/**/*.*", "browser/**/*.*"], ["build"]);
 });
 
-gulp.task("browser-sync", ["browserify", "nodemon"], function () {
+gulp.task("browser-sync", ["browserify", "scss-watch", "nodemon"], function () {
     browserSync.init({
         files: ['public/**/*.*'],
         proxy: 'http://localhost:3000',
