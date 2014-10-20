@@ -54,11 +54,10 @@ var App = React.createClass({
 });
 
 var routes = (
-    <Routes location="hash">
+    <Routes location="history">
         <Route name="app" path="/" handler={App}>
             <Route name="about" handler={About} />
             <Route name="names" handler={Names} />
-            <DefaultRoute handler={About} />
         </Route>
     </Routes>
 );

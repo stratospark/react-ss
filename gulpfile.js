@@ -21,7 +21,7 @@ gulp.task("nodemon", function (cb) {
     return nodemon({
         script: "bin/www",
         ext: "js jsx",
-        watch: ["react/**", "routes/**", "app.js"]
+        watch: ["react/*", "routes/*", "app.js"]
     }).on("start", function onStart() {
         if (!called) cb();
         called = true;
@@ -69,6 +69,7 @@ gulp.task("browser-sync", ["browserify", "scss-watch", "nodemon"], function () {
         proxy: 'http://localhost:3000',
         port: 4000,
         browser: ['google chrome'],
+        minify: false,
         ghostMode: {
             clicks: true,
             location: true,
