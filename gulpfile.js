@@ -48,7 +48,7 @@ gulp.task("scss-watch", function () {
     gulp.watch(["./scss/*.scss"], ["scss"]);
 });
 
-gulp.task("build", function () {
+gulp.task("build", ["scss"], function () {
     gulp.src("browser/bootstrap.jsx", {read: false})
         .pipe(plumber())
         .pipe(browserify({
