@@ -8,8 +8,8 @@ var gulp = require("gulp"),
     sourcemaps = require("gulp-sourcemaps"),
     plumber = require("gulp-plumber");
 
-gulp.task("default", ["build", "browser-sync"]);
-
+gulp.task("default", ["build", "watch-all"]);
+gulp.task("watch-all", ["scss-watch", "nodemon", "browser-sync"]);
 
 var browserSyncReloadDelayMs = process.env.BROWSER_SYNC_RELOAD_DELAY_MS ?
     process.env.BROWSER_SYNC_RELOAD_DELAY_MS : 400;
@@ -48,7 +48,7 @@ gulp.task("scss-watch", function () {
     gulp.watch(["./scss/*.scss"], ["scss"]);
 });
 
-gulp.task("build", ["scss"], function () {
+gulp.task("build", ["scss", "browserify"], function () {
     gulp.src("browser/bootstrap.jsx", {read: false})
         .pipe(plumber())
         .pipe(browserify({
@@ -63,7 +63,7 @@ gulp.task("browserify", function () {
     gulp.watch(["react/**/*.*", "browser/**/*.*"], ["build"]);
 });
 
-gulp.task("browser-sync", ["browserify", "scss-watch", "nodemon"], function () {
+gulp.task("browser-sync", function () {
     browserSync.init({
         files: ['public/**/*.*'],
         proxy: 'http://localhost:3000',
