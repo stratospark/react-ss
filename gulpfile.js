@@ -6,6 +6,7 @@ var gulp = require("gulp"),
     jest = require("gulp-jest"),
     sass = require("gulp-sass"),
     sourcemaps = require("gulp-sourcemaps"),
+    autoprefixer = require("gulp-autoprefixer"),
     plumber = require("gulp-plumber");
 
 gulp.task("default", ["build", "watch-all"]);
@@ -41,6 +42,9 @@ gulp.task("scss", function () {
         .pipe(sourcemaps.init())
         .pipe(sass())
         .pipe(sourcemaps.write())
+        .pipe(autoprefixer({
+            browsers: ["> 1%", "last 2 versions", "Firefox ESR", "Opera 12.1"]
+        }))
         .pipe(gulp.dest("./public/stylesheets/"));
 });
 
