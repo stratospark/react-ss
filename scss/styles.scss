@@ -1,3 +1,5 @@
+@import "animations";
+
 $bg: #96f292;
 
 body {
@@ -10,4 +12,23 @@ a {
 }
 ol {
   list-style: decimal-leading-zero;
+}
+
+.example-enter {
+  @extend .pt-page-moveFromRight;
+  position: absolute !important;
+}
+
+.example-enter.example-enter-active {
+//  opacity: 1;
+}
+
+.example-leave {
+  @extend .pt-page-moveToLeft;
+  position: absolute !important;
+  top: 0;
+}
+
+.example-leave.example-leave-active {
+//  opacity: 0.00;
 }
