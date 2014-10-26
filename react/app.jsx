@@ -2,6 +2,7 @@
 
 var React = require('react'),
     CSSTransitionGroup = require('react/lib/ReactCSSTransitionGroup'),
+    Maps = require("./routes/Maps.jsx"),
     About = require('./routes/About.jsx'),
     Names = require('./routes/Names.jsx');
 
@@ -29,6 +30,9 @@ var Bar = React.createClass({
                     </li>
                     <li>
                         <Link to="names">Names</Link>
+                    </li>
+                    <li>
+                        <Link to="maps">Maps</Link>
                     </li>
                     <NavItem key={3} disabled={true}>Contact</NavItem>
                 </Nav>
@@ -69,6 +73,7 @@ var routes = (
         <Route name="app" path="/" handler={App}>
             <Route name="about" handler={About} addHandlerKey={true}/>
             <Route name="names" handler={Names} addHandlerKey={true} />
+            <Route name="maps" handler={Maps} addHandlerKey={true}/>
             <DefaultRoute handler={About} />
         </Route>
     </Routes>
