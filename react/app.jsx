@@ -47,7 +47,8 @@ var App = React.createClass({
                 <html>
                     <head>
                         <link rel="stylesheet" type="text/css" href="/stylesheets/styles.css"/>
-                        <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+                        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css"/>
+                            <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
                     </head>
                     <body>
                         <Bar/>
