@@ -6,6 +6,7 @@ var React = require('react'),
 var NameList = require('../components/NameList.jsx'),
     Button = require("react-bootstrap").Button,
     ButtonToolbar = require("react-bootstrap").ButtonToolbar;
+var AppPageFrame = require("../components/AppPageFrame.jsx");
 
 
 var companyNames = [
@@ -65,17 +66,16 @@ var Names = React.createClass({
 
     render: function () {
         return (
-            <div>
+            <AppPageFrame>
                 <h1>Names</h1>
                 <ButtonToolbar>
                     <Button bsStyle="primary" bsSize="large" onClick={this.decrement}>Decrement</Button>
                     <Button bsSize="large" onClick={this.increment}>Increment</Button>
                     <span className="counter">{this.state.counter}</span>
                 </ButtonToolbar>
-
                 <h1>Name Options:</h1>
                 <NameList names={companyNames}/>
-            </div>
+            </AppPageFrame>
         );
     }
 });
