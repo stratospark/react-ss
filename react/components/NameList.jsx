@@ -5,13 +5,10 @@ var React = require('react'),
 
 var NameList = React.createClass({
     render: function () {
-        var stuff = D.ol(null,
+        return D.ol(null,
             this.props.names.map(function (x) {
-                return D.li(null, x)
+                return <li key={x}>{x}</li>;
             })
-        );
-        return (
-            stuff
         );
     }
 });
