@@ -41,6 +41,7 @@ var App = React.createClass({
                 <head>
                     <link rel="stylesheet" type="text/css" href="/stylesheets/styles.css"/>
                     <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+                    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
                 </head>
                 <body>
                     <Bar/>
