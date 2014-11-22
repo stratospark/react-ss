@@ -17,7 +17,7 @@ var Nav = require("react-bootstrap").Nav,
 var Bar = React.createClass({
     render: function () {
         return (
-            <Navbar staticTop={true}>
+            <Navbar staticTop={true}  className="app-nav">
                 <Nav bsStyle="pills" activeKey={1}>
                     <li>
                         <Link to="about">About</Link>
@@ -43,9 +43,9 @@ var App = React.createClass({
                     <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
                     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
                 </head>
-                <body>
+                <body className="app-body">
                     <Bar/>
-                    <CSSTransitionGroup transitionName="example">
+                    <CSSTransitionGroup transitionName="page-transition" className="app-page">
                         <this.props.activeRouteHandler/>
                     </CSSTransitionGroup>
                     <script src="/javascripts/bundle.js"></script>
