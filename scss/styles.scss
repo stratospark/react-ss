@@ -16,15 +16,29 @@ ol {
   list-style: decimal-leading-zero;
 }
 
+$navbarOpacity: 0.8;
+$navbarTransitionTime: .5s;
+
 .navbar.navbar-default.app-nav {
   border-radius: 0;
   margin-bottom: 0;
   position: fixed;
   width: 100%;
   background: #efe;
-  opacity: 0.8;
   // workaround for fixed/perspective bug hiding navbar when scrolled
   transform: translateZ(0);
+}
+
+.bar-visible {
+  visibility: visible;
+  opacity: $navbarOpacity;
+  transition-delay: 0s;
+}
+
+.bar-invisible {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s linear $navbarTransitionTime, opacity $navbarTransitionTime linear;
 }
 
 .navbar-default.app-nav .navbar-nav > li > a {
