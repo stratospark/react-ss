@@ -16,8 +16,10 @@ var Nav = require("react-bootstrap").Nav,
 
 var Bar = React.createClass({
     render: function () {
+        var classes = "app-nav";
+        classes += " " + (this.props.show ? "bar-visible" : "bar-invisible");
         return (
-            <Navbar staticTop={true}>
+            <Navbar staticTop={true} className={classes}>
                 <Nav bsStyle="pills" activeKey={1}>
                     <li>
                         <Link to="about">About</Link>
@@ -35,6 +37,17 @@ var Bar = React.createClass({
 });
 
 var App = React.createClass({
+    getInitialState: function () {
+        return {navbarVisible: false};
+    },
+    showNav: function () {
+        this.setState({navbarVisible: true});
+        console.log("showing navbar");
+        setTimeout(function () {
+            console.log("hiding navbar");
+            this.setState({navbarVisible: false});
+        }.bind(this), 4000);
+    },
     render: function () {
         return (
             <html>
@@ -43,9 +56,9 @@ var App = React.createClass({
                     <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
                     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
                 </head>
-                <body>
-                    <Bar/>
-                    <CSSTransitionGroup transitionName="example">
+                <body className="app-body" onClick={this.showNav}>
+                    <Bar show={this.state.navbarVisible} />
+                    <CSSTransitionGroup transitionName="page-transition" className="app-page">
                         <this.props.activeRouteHandler/>
                     </CSSTransitionGroup>
                     <script src="/javascripts/bundle.js"></script>

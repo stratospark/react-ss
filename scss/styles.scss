@@ -1,48 +1,72 @@
 @import "animations";
 
-$pageBg: #f2eeda;
+$pageBg: #f8f8e8;
+$pageAnimateTime: .3s;
 
-body {
+body.app-body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  background: black !important;
-  color: #050;
+  background: #333;
+  color: #121;
   width: 100%;
-}
-
-a {
-  color: #00B7FF;
+  // perspective needed for rotate animation to work
+  perspective: 1200px;
 }
 
 ol {
   list-style: decimal-leading-zero;
 }
 
-.navbar.navbar-default {
+$navbarOpacity: 0.8;
+$navbarTransitionTime: .5s;
+
+.navbar.navbar-default.app-nav {
   border-radius: 0;
   margin-bottom: 0;
+  position: fixed;
+  width: 100%;
+  background: #efe;
+  // workaround for fixed/perspective bug hiding navbar when scrolled
+  transform: translateZ(0);
 }
 
-$pageAnimateTime: .4s;
-.example-enter {
-  position: absolute;
+.bar-visible {
+  visibility: visible;
+  opacity: $navbarOpacity;
+  transition-delay: 0s;
+}
+
+.bar-invisible {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s linear $navbarTransitionTime, opacity $navbarTransitionTime linear;
+}
+
+.navbar-default.app-nav .navbar-nav > li > a {
+  color: #113311;
+}
+
+.page-transition-enter {
   animation: moveFromRight $pageAnimateTime ease-in both;
-  z-index: 100;
 }
 
-.example-enter.example-enter-active {
+.page-transition-enter.page-transition-enter-active {
 }
 
-.example-leave {
-  position: absolute;
+.page-transition-leave {
   transform-origin: 0% 50%;
   animation: rotateRightSideFirst $pageAnimateTime both ease-in;
 }
 
-.example-leave.example-leave-active {
+.page-transition-leave.page-transition-leave-active {
 }
 
 .app-page-frame {
   position: absolute;
   background: $pageBg;
   width: 100%;
+  // hack: TBD remove padding
+  // page should scroll in the entire area excluding navbar
+  padding-top: 50px;
+  //  prevent page background from showing
+  min-height: 100%;
 }
