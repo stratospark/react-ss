@@ -13,6 +13,7 @@ var Routes = require("react-router").Routes,
 var Nav = require("react-bootstrap").Nav,
     Navbar = require("react-bootstrap").Navbar,
     NavItem = require("react-bootstrap").NavItem;
+var Swiper = require("react-swiper");
 
 var Bar = React.createClass({
     render: function () {
@@ -41,12 +42,23 @@ var App = React.createClass({
         return {navbarVisible: false};
     },
     showNav: function () {
-        this.setState({navbarVisible: true});
-        console.log("showing navbar");
-        setTimeout(function () {
-            console.log("hiding navbar");
-            this.setState({navbarVisible: false});
-        }.bind(this), 4000);
+        if (!this.state.navbarVisible) {
+            this.setState({navbarVisible: true});
+            console.log("showing navbar");
+            setTimeout(function () {
+                console.log("hiding navbar");
+                this.setState({navbarVisible: false});
+            }.bind(this), 4000);
+        }
+    },
+    handleSwipe: function (event) {
+        console.log("handleSwipe", event);
+        switch (event.type) {
+            case "swipeLeft":
+            case "swipeRight":
+                this.showNav();
+                break;
+        }
     },
     render: function () {
         return (
@@ -56,13 +68,13 @@ var App = React.createClass({
                     <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
                     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
                 </head>
-                <body className="app-body" onClick={this.showNav}>
+                <Swiper tagName="body" className="app-body" onClick={this.showNav} onSwipe={this.handleSwipe}>
                     <Bar show={this.state.navbarVisible} />
                     <CSSTransitionGroup transitionName="page-transition" className="app-page">
                         <this.props.activeRouteHandler/>
                     </CSSTransitionGroup>
                     <script src="/javascripts/bundle.js"></script>
-                </body>
+                </Swiper>
             </html>
         )
     }
