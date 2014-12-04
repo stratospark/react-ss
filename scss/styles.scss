@@ -3,6 +3,20 @@
 $pageBg: #f8f8e8;
 $pageAnimateTime: .3s;
 
+$menuOpacity: .8;
+$menuBg: rgba(#efe, $menuOpacity);
+$menuFg: #131;
+$menuLinkBg: #aca;
+$menuBorder: #9b9;
+$menuActiveLinkBg: #cec;
+$menuTransitionTime: .3s;
+
+$navbarOpacity: $menuOpacity;
+$navbarTransitionTime: .5s;
+
+$sidebarWidth: 200px;
+$sidebarTransitionTime: .2s;
+
 body.app-body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
   background: #333;
@@ -16,17 +30,19 @@ ol {
   list-style: decimal-leading-zero;
 }
 
-$navbarOpacity: 0.8;
-$navbarTransitionTime: .5s;
+.app-sidebar,
+.navbar.navbar-default.app-nav {
+  position: fixed;
+  transform: translateZ(0);
+}
 
 .navbar.navbar-default.app-nav {
   border-radius: 0;
   margin-bottom: 0;
-  position: fixed;
   width: 100%;
-  background: #efe;
+  background: $menuBg;
   // workaround for fixed/perspective bug hiding navbar when scrolled
-  transform: translateZ(0);
+  z-index: 100;
 }
 
 .bar-visible {
@@ -38,11 +54,11 @@ $navbarTransitionTime: .5s;
 .bar-invisible {
   visibility: hidden;
   opacity: 0;
-  transition: visibility 0s linear $navbarTransitionTime, opacity $navbarTransitionTime linear;
+  transition: visibility 0s $navbarTransitionTime linear, opacity $navbarTransitionTime linear;
 }
 
 .navbar-default.app-nav .navbar-nav > li > a {
-  color: #113311;
+  color: $menuFg;
 }
 
 .page-transition-enter {
@@ -69,4 +85,51 @@ $navbarTransitionTime: .5s;
   padding-top: 50px;
   //  prevent page background from showing
   min-height: 100%;
+}
+
+.app-sidebar {
+  color: $menuFg;
+  background: $menuBg;
+  position: absolute;
+  width: 100%;
+  max-width: $sidebarWidth;
+  height: 100%;
+  z-index: 1000;
+  transition: left $sidebarTransitionTime ease-in-out;
+  position: fixed;
+}
+
+.app-sidebar ul {
+  padding: 0;
+  list-style: none;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.app-sidebar ul li {
+  margin: 10px;
+}
+
+.app-sidebar ul li a {
+  padding: 15px 20px;
+  border: 1px solid $menuBorder;
+  border-radius: 8px;
+  text-decoration: none;
+  color: $menuFg;
+  transition: background $menuTransitionTime ease-in;
+  background: $menuLinkBg;
+  display: block;
+}
+
+.app-sidebar ul li:hover a {
+  background: $menuActiveLinkBg;
+}
+
+.sidebar-invisible {
+  left: -$sidebarWidth;
+}
+
+.sidebar-visible {
+  left: 0;
 }
