@@ -1,48 +1,135 @@
 @import "animations";
 
-$pageBg: #f2eeda;
+$pageBg: #f8f8e8;
+$pageAnimateTime: .3s;
 
-body {
+$menuOpacity: .8;
+$menuBg: rgba(#efe, $menuOpacity);
+$menuFg: #131;
+$menuLinkBg: #aca;
+$menuBorder: #9b9;
+$menuActiveLinkBg: #cec;
+$menuTransitionTime: .3s;
+
+$navbarOpacity: $menuOpacity;
+$navbarTransitionTime: .5s;
+
+$sidebarWidth: 200px;
+$sidebarTransitionTime: .2s;
+
+body.app-body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  background: black !important;
-  color: #050;
+  background: #333;
+  color: #121;
   width: 100%;
-}
-
-a {
-  color: #00B7FF;
+  // perspective needed for rotate animation to work
+  perspective: 1200px;
 }
 
 ol {
   list-style: decimal-leading-zero;
 }
 
-.navbar.navbar-default {
-  border-radius: 0;
-  margin-bottom: 0;
+.app-sidebar,
+.navbar.navbar-default.app-nav {
+  position: fixed;
+  transform: translateZ(0);
 }
 
-$pageAnimateTime: .4s;
-.example-enter {
-  position: absolute;
-  animation: moveFromRight $pageAnimateTime ease-in both;
+.navbar.navbar-default.app-nav {
+  border-radius: 0;
+  margin-bottom: 0;
+  width: 100%;
+  background: $menuBg;
+  // workaround for fixed/perspective bug hiding navbar when scrolled
   z-index: 100;
 }
 
-.example-enter.example-enter-active {
+.bar-visible {
+  visibility: visible;
+  opacity: $navbarOpacity;
+  transition-delay: 0s;
 }
 
-.example-leave {
-  position: absolute;
+.bar-invisible {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s $navbarTransitionTime linear, opacity $navbarTransitionTime linear;
+}
+
+.navbar-default.app-nav .navbar-nav > li > a {
+  color: $menuFg;
+}
+
+.page-transition-enter {
+  animation: moveFromRight $pageAnimateTime ease-in both;
+}
+
+.page-transition-enter.page-transition-enter-active {
+}
+
+.page-transition-leave {
   transform-origin: 0% 50%;
   animation: rotateRightSideFirst $pageAnimateTime both ease-in;
 }
 
-.example-leave.example-leave-active {
+.page-transition-leave.page-transition-leave-active {
 }
 
 .app-page-frame {
   position: absolute;
   background: $pageBg;
   width: 100%;
+  // hack: TBD remove padding
+  // page should scroll in the entire area excluding navbar
+  padding-top: 50px;
+  //  prevent page background from showing
+  min-height: 100%;
+}
+
+.app-sidebar {
+  color: $menuFg;
+  background: $menuBg;
+  position: absolute;
+  width: 100%;
+  max-width: $sidebarWidth;
+  height: 100%;
+  z-index: 1000;
+  transition: left $sidebarTransitionTime ease-in-out;
+  position: fixed;
+}
+
+.app-sidebar ul {
+  padding: 0;
+  list-style: none;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.app-sidebar ul li {
+  margin: 10px;
+}
+
+.app-sidebar ul li a {
+  padding: 15px 20px;
+  border: 1px solid $menuBorder;
+  border-radius: 8px;
+  text-decoration: none;
+  color: $menuFg;
+  transition: background $menuTransitionTime ease-in;
+  background: $menuLinkBg;
+  display: block;
+}
+
+.app-sidebar ul li:hover a {
+  background: $menuActiveLinkBg;
+}
+
+.sidebar-invisible {
+  left: -$sidebarWidth;
+}
+
+.sidebar-visible {
+  left: 0;
 }
