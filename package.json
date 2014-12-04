@@ -23,6 +23,7 @@
     "cookie-parser": "~1.3.3",
     "debug": "~2.0.0",
     "express": "~4.9.0",
+    "gulp-util": "^3.0.1",
     "jade": "~1.6.0",
     "morgan": "~1.3.0",
     "node-jsx": "^0.11.0",
@@ -31,7 +32,8 @@
     "react-bootstrap": "^0.12.0",
     "react-router": "^0.9.4",
     "react-swiper": "^0.1.4",
-    "serve-favicon": "~2.1.3"
+    "serve-favicon": "~2.1.3",
+    "yargs": "^1.3.3"
   },
   "devDependencies": {
     "autoprefixer": "^3.1.0",

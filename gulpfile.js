@@ -7,15 +7,11 @@ var gulp = require("gulp"),
     sass = require("gulp-sass"),
     sourcemaps = require("gulp-sourcemaps"),
     autoprefixer = require("gulp-autoprefixer"),
+    log = require("gulp-util/lib/log"),
     plumber = require("gulp-plumber");
 
-gulp.task("default", ["build", "watch-all"]);
+gulp.task("start", ["build-js", "scss", "watch-all"]);
 gulp.task("watch-all", ["scss-watch", "browserify-watch", "nodemon", "browser-sync"]);
-
-var browserSyncReloadDelayMs = process.env.BROWSER_SYNC_RELOAD_DELAY_MS ?
-    process.env.BROWSER_SYNC_RELOAD_DELAY_MS : 400;
-
-console.log("browserSyncReloadDelayMs", browserSyncReloadDelayMs);
 
 gulp.task("nodemon", function (cb) {
     var called = false;
@@ -26,12 +22,6 @@ gulp.task("nodemon", function (cb) {
     }).on("start", function onStart() {
         if (!called) cb();
         called = true;
-    }).on("restart", function onRestart() {
-        setTimeout(function reload() {
-            browserSync.reload({
-                stream: false
-            });
-        }, browserSyncReloadDelayMs);
     });
 });
 
@@ -52,7 +42,7 @@ gulp.task("scss-watch", function () {
     gulp.watch(["./scss/*.scss"], ["scss"]);
 });
 
-gulp.task("build", ["scss"], function () {
+gulp.task("build-js", function () {
     gulp.src("browser/bootstrap.jsx", {read: false})
         .pipe(plumber())
         .pipe(browserify({
@@ -64,7 +54,7 @@ gulp.task("build", ["scss"], function () {
 });
 
 gulp.task("browserify-watch", function () {
-    gulp.watch(["react/**/*.*", "browser/**/*.*"], ["build"]);
+    gulp.watch(["react/**/*.*", "browser/**/*.*"], ["build-js"]);
 });
 
 gulp.task("browser-sync", function () {
@@ -104,4 +94,24 @@ gulp.task("jest", function () {
         //    "react"
         //]
     }));
+});
+
+var argv = require('yargs').argv, // for args parsing
+    spawn = require('child_process').spawn;
+
+gulp.task('default', function () {
+    var p;
+    gulp.watch(['gulpfile.js', 'package.json'], spawnChildren);
+    spawnChildren();
+
+    function spawnChildren(e) {
+        // kill previous spawned process
+        if (p) {
+            p.kill();
+        }
+        var task = argv.task || 'start';
+        log('auto-reload task', task);
+        // `spawn` a child `gulp` process linked to the parent `stdio`
+        p = spawn('gulp', [task], {stdio: 'inherit'});
+    }
 });
