@@ -18,7 +18,7 @@ gulp.task("nodemon", function (cb) {
     return nodemon({
         script: "bin/www",
         ext: "js jsx",
-        watch: ["react/*", "routes/*", "app.js"]
+        watch: ["react/*", "routes/*", "src/js", "app.js"]
     }).on("start", function onStart() {
         if (!called) cb();
         called = true;
@@ -54,7 +54,7 @@ gulp.task("build-js", function () {
 });
 
 gulp.task("browserify-watch", function () {
-    gulp.watch(["react/**/*.*", "browser/**/*.*"], ["build-js"]);
+    gulp.watch(["react/**/*.*", "browser/**/*.*", "src/js/**/*.js"], ["build-js"]);
 });
 
 gulp.task("browser-sync", function () {

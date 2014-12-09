@@ -13,11 +13,27 @@ var Routes = require("react-router").Routes,
 var Nav = require("react-bootstrap").Nav,
     Navbar = require("react-bootstrap").Navbar,
     NavItem = require("react-bootstrap").NavItem;
+var AppDispacher = require("../src/js/app-dispatcher");
+var AppStore = require("../src/js/app-store");
 
 var TopBar = React.createClass({
+    getInitialState: function () {
+        return {visible: false};
+    },
+    setVisible: function (state) {
+        //console.log('TopBar setVisible', state);
+        this.setState({visible: state});
+    },
+    componentDidMount: function () {
+        //console.log('TopBar componentDidMount');
+        AppStore.bind('topBarVisible', this.setVisible);
+    },
+    componentWillUnmount: function () {
+        AppStore.unbind('topBarVisible', this.setVisible);
+    },
     render: function () {
         var classes = "app-nav";
-        classes += " " + (this.props.show ? "bar-visible" : "bar-invisible");
+        classes += " " + (this.state.visible ? "bar-visible" : "bar-invisible");
         return (
             <Navbar staticTop={true} className={classes}>
                 <Nav bsStyle="pills" activeKey={1}>
@@ -37,9 +53,23 @@ var TopBar = React.createClass({
 });
 
 var SideBar = React.createClass({
+    getInitialState: function () {
+        return {visible: false};
+    },
+    setVisible: function (state) {
+        //console.log('SideBar setVisible', state);
+        this.setState({visible: state});
+    },
+    componentDidMount: function () {
+        //console.log('SideBar componentDidMount');
+        AppStore.bind('sideBarVisible', this.setVisible);
+    },
+    componentWillUnmount: function () {
+        AppStore.unbind('sideBarVisible', this.setVisible);
+    },
     render: function () {
         var classes = "app-sidebar ";
-        classes += this.props.show ? "sidebar-visible" : "sidebar-invisible";
+        classes += this.state.visible ? "sidebar-visible" : "sidebar-invisible";
         return (
             <div className={classes}>
                 <ul>
@@ -60,51 +90,24 @@ var SideBar = React.createClass({
 
 var App = React.createClass({
     navHideTimeoutId: null,
-    getInitialState: function () {
-        return {
-            navbarVisible: false,
-            sidebarVisible: false
-        };
-    },
     componentDidMount: function () {
         var Hammer = require('hammerjs');
         var h = new Hammer(this.getDOMNode());
         h.get('swipe').set({
-            //direction: Hammer.DIRECTION_VERTICAL,
             threshold: 5,
             velocity: 0.1,
-            });
+        });
         h.on('swipeleft', function (event) {
             //console.log("swipeleft", event);
-            this.showSidebar(false);
+            AppDispacher.dispatchAction({event: 'viewSwipe', direction: 'left'});
         }.bind(this));
         h.on('swiperight', function (event) {
             //console.log("swiperight", event);
-            this.showSidebar(true);
+            AppDispacher.dispatchAction({event: 'viewSwipe', direction: 'right'});
         }.bind(this));
-        h.on('tap', this.toggleNav);
-        this.hammer = h;
-    },
-    toggleNav: function () {
-        console.log("toggle navbar");
-        if (this.state.navbarVisible) {
-            this.setState({navbarVisible: false});
-            console.log("hiding navbar");
-            if (this.navHideTimeoutId) {
-                window.clearTimeout(this.navHideTimeoutId);
-                this.navHideTimeoutId = null;
-            }
-        } else {
-            this.setState({navbarVisible: true});
-            this.navHideTimeoutId = setTimeout(function () {
-                this.navHideTimeoutId = null;
-                console.log("hiding navbar via timeout");
-                this.setState({navbarVisible: false});
-            }.bind(this), 10000);
-        }
-    },
-    showSidebar: function (state) {
-        this.setState({sidebarVisible: state});
+        h.on('tap', function (state) {
+            AppDispacher.dispatchAction({event: 'viewTap'});
+        });
     },
     render: function () {
         return (
@@ -115,8 +118,8 @@ var App = React.createClass({
                     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
                 </head>
                 <body className="app-body" >
-                    <TopBar show={this.state.navbarVisible} />
-                    <SideBar show={this.state.sidebarVisible}/>
+                    <TopBar/>
+                    <SideBar/>
                     <CSSTransitionGroup transitionName="page-transition" className="app-page">
                         <this.props.activeRouteHandler/>
                     </CSSTransitionGroup>
@@ -153,6 +156,5 @@ var routes = (
 );
 
 module.exports = {
-    App: App,
     routes: routes
 };
