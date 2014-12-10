@@ -30,13 +30,13 @@ ol {
   list-style: decimal-leading-zero;
 }
 
-.app-sidebar,
-.navbar.navbar-default.app-nav {
+.sidebar,
+.navbar.navbar-default.topbar {
   position: fixed;
   transform: translateZ(0);
 }
 
-.navbar.navbar-default.app-nav {
+.navbar.navbar-default.topbar {
   border-radius: 0;
   margin-bottom: 0;
   width: 100%;
@@ -45,19 +45,19 @@ ol {
   z-index: 100;
 }
 
-.bar-visible {
+.topbar-visible {
   visibility: visible;
   opacity: $navbarOpacity;
   transition-delay: 0s;
 }
 
-.bar-invisible {
+.topbar-invisible {
   visibility: hidden;
   opacity: 0;
   transition: visibility 0s $navbarTransitionTime linear, opacity $navbarTransitionTime linear;
 }
 
-.navbar-default.app-nav .navbar-nav > li > a {
+.navbar-default.topbar .navbar-nav > li > a {
   color: $menuFg;
 }
 
@@ -87,7 +87,7 @@ ol {
   min-height: 100%;
 }
 
-.app-sidebar {
+.sidebar {
   color: $menuFg;
   background: $menuBg;
   position: absolute;
@@ -99,7 +99,7 @@ ol {
   position: fixed;
 }
 
-.app-sidebar ul {
+.sidebar ul {
   padding: 0;
   list-style: none;
   position: relative;
@@ -107,11 +107,11 @@ ol {
   transform: translateY(-50%);
 }
 
-.app-sidebar ul li {
+.sidebar ul li {
   margin: 10px;
 }
 
-.app-sidebar ul li a {
+.sidebar ul li a {
   padding: 15px 20px;
   border: 1px solid $menuBorder;
   border-radius: 8px;
@@ -122,7 +122,7 @@ ol {
   display: block;
 }
 
-.app-sidebar ul li:hover a {
+.sidebar ul li:hover a {
   background: $menuActiveLinkBg;
 }
 

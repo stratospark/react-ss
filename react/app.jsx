@@ -32,8 +32,8 @@ var TopBar = React.createClass({
         AppStore.unbind('topBarVisible', this.setVisible);
     },
     render: function () {
-        var classes = "app-nav";
-        classes += " " + (this.state.visible ? "bar-visible" : "bar-invisible");
+        var classes = "topbar";
+        classes += " " + (this.state.visible ? "topbar-visible" : "topbar-invisible");
         return (
             <Navbar staticTop={true} className={classes}>
                 <Nav bsStyle="pills" activeKey={1}>
@@ -68,7 +68,7 @@ var SideBar = React.createClass({
         AppStore.unbind('sideBarVisible', this.setVisible);
     },
     render: function () {
-        var classes = "app-sidebar ";
+        var classes = "sidebar ";
         classes += this.state.visible ? "sidebar-visible" : "sidebar-invisible";
         return (
             <div className={classes}>
