@@ -15,6 +15,7 @@ var Nav = require("react-bootstrap").Nav,
     NavItem = require("react-bootstrap").NavItem;
 var AppDispacher = require("../src/js/app-dispatcher");
 var AppStore = require("../src/js/app-store");
+var AppEvents = require('../src/js/app-events');
 
 var TopBar = React.createClass({
     getInitialState: function () {
@@ -26,10 +27,10 @@ var TopBar = React.createClass({
     },
     componentDidMount: function () {
         //console.log('TopBar componentDidMount');
-        AppStore.bind('topBarVisible', this.setVisible);
+        AppStore.bind(AppEvents.toView.topBarVisible, this.setVisible);
     },
     componentWillUnmount: function () {
-        AppStore.unbind('topBarVisible', this.setVisible);
+        AppStore.unbind(AppEvents.toView.topBarVisible, this.setVisible);
     },
     render: function () {
         var classes = "topbar";
@@ -62,10 +63,10 @@ var SideBar = React.createClass({
     },
     componentDidMount: function () {
         //console.log('SideBar componentDidMount');
-        AppStore.bind('sideBarVisible', this.setVisible);
+        AppStore.bind(AppEvents.toView.sideBarVisible, this.setVisible);
     },
     componentWillUnmount: function () {
-        AppStore.unbind('sideBarVisible', this.setVisible);
+        AppStore.unbind(AppEvents.toView.sideBarVisible, this.setVisible);
     },
     render: function () {
         var classes = "sidebar ";
@@ -91,6 +92,7 @@ var SideBar = React.createClass({
 var App = React.createClass({
     navHideTimeoutId: null,
     componentDidMount: function () {
+        var fromView = AppEvents.fromView;
         var Hammer = require('hammerjs');
         var h = new Hammer(this.getDOMNode());
         h.get('swipe').set({
@@ -99,14 +101,14 @@ var App = React.createClass({
         });
         h.on('swipeleft', function (event) {
             //console.log("swipeleft", event);
-            AppDispacher.dispatchAction({event: 'viewSwipe', direction: 'left'});
+            AppDispacher.dispatchAction({event: fromView.globSwipe, direction: 'left'});
         }.bind(this));
         h.on('swiperight', function (event) {
             //console.log("swiperight", event);
-            AppDispacher.dispatchAction({event: 'viewSwipe', direction: 'right'});
+            AppDispacher.dispatchAction({event: fromView.globSwipe, direction: 'right'});
         }.bind(this));
         h.on('tap', function (state) {
-            AppDispacher.dispatchAction({event: 'viewTap'});
+            AppDispacher.dispatchAction({event: fromView.globTap});
         });
     },
     render: function () {

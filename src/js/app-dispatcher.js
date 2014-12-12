@@ -1,24 +1,26 @@
 var Dispatcher = require('flux').Dispatcher;
+var appEvents = require('./app-events');
+var actions = appEvents.actions;
+var fromView = appEvents.fromView;
 
 var AppDispatcher = new Dispatcher();
 
 AppDispatcher.dispatchAction = function eventTrigger(payload) {
-    var data = null;
+    //console.log('eventTrigger', payload);
     switch (payload.event) {
-        case 'viewSwipe':
-            data = (payload.direction === 'right' ? 'open' : 'close');
+        case fromView.globSwipe:
+            this.dispatch({
+                action: actions.sideBar,
+                data: {open: payload.direction === 'right'}
+            });
+            break;
+        case fromView.globTap:
+            this.dispatch({action: actions.topBar});
+            break;
+        default:
+            console.error('unknown event', payload.event);
             break;
     }
-    //console.log('eventTrigger', payload, data);
-    this.dispatch({
-        action: this.events[payload.event],
-        data: data
-    });
-};
-
-AppDispatcher.events = {
-    viewSwipe: 'sideBar',
-    viewTap: 'topBar'
 };
 
 module.exports = AppDispatcher;
