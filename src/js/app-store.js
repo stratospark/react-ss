@@ -3,42 +3,76 @@ var actionEvents = require('./app-events').actions;
 var toViewEvents = require('./app-events').toView;
 
 var AppStoreCtor = function () {
-    this.topBar = {timerId: null};
+    this.topBar = {};
     this.sideBar = {};
 };
 require('microevent').mixin(AppStoreCtor);
 var AppStore = new AppStoreCtor();
 
-function sideBarStateSet(data) {
-    var bar = this.sideBar;
-    bar.visible = data.open;
-    this.trigger(toViewEvents.sideBarVisible, bar.visible);
-    //console.log("sideBar " + (bar.visible ? "visible" : "invisible"));
-}
-
-function topBarToggle() {
-    var bar = this.topBar;
+function barStateSet(args) {
+    //console.log('barStateSet', args);
+    var bar = args.bar;
+    var vis;
+    switch (args.state) {
+        case 'show':
+            vis = true;
+            break;
+        case 'hide':
+            vis = false;
+            break;
+        case 'toggle':
+            vis = !bar.visible;
+            break;
+        default:
+            throw new Error('unexpected value for visible state ' + args.state);
+    }
+    bar.visible = vis;
+    AppStore.trigger(args.trig, bar.visible);
     if (bar.timerId) {
         window.clearTimeout(bar.timerId);
         bar.timerId = null;
     }
-    bar.visible = !bar.visible;
-    if (bar.visible) {
-        bar.timerId = setTimeout(topBarToggle.bind(this), 5000);
+    if (bar.visible && args.autoCloseTimerMs) {
+        bar.timerId = setTimeout(function () {
+            bar.visible = false;
+            AppStore.trigger(args.trig, bar.visible);
+        }, args.autoCloseTimerMs);
     }
-    //console.log("topBar " + (bar.visible ? "visible" : "invisible"));
-    AppStore.trigger(toViewEvents.topBarVisible, bar.visible);
+}
+
+function handleSideBarState(pl) {
+    if (AppStore.topBar.visible) {
+        barStateSet({
+            bar: AppStore.topBar,
+            state: 'hide',
+            trig: toViewEvents.topBarVisible,
+        });
+    }
+    barStateSet({
+        bar: AppStore.sideBar,
+        state: pl.state,
+        trig: toViewEvents.sideBarVisible
+    });
+}
+
+function handleTopBarState(pl) {
+    !AppStore.sideBar.visible && barStateSet({
+        bar: AppStore.topBar,
+        state: pl.state,
+        trig: toViewEvents.topBarVisible,
+        autoCloseTimerMs: 5000
+    });
 }
 
 var handlers = {};
 
-handlers[actionEvents.sideBar] = sideBarStateSet;
-handlers[actionEvents.topBar] = topBarToggle;
+handlers[actionEvents.sideBarState] = handleSideBarState;
+handlers[actionEvents.topBarState] = handleTopBarState;
 
 AppDispacher.register(function eventHandle(payload) {
-    //console.log('eventHandle', payload.event);
-    var handler = handlers[payload.action].bind(AppStore);
-    handler(payload.data);
+    //console.log('eventHandle', payload);
+    var handler = handlers[payload.action];
+    handler(payload);
     return true; // flux promise resolution
 });
 

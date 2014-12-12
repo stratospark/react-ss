@@ -17,6 +17,15 @@ var AppDispacher = require("../src/js/app-dispatcher");
 var AppStore = require("../src/js/app-store");
 var AppEvents = require('../src/js/app-events');
 
+var Hammer = typeof(document) !== "undefined" ? require('hammerjs') : null;
+
+function preventEventBubbleUp(domNode){
+    domNode.addEventListener('touchend', function(ev) {
+        // hack to keep the events from bubbling up
+        ev.stopPropagation();
+    });
+}
+
 var TopBar = React.createClass({
     getInitialState: function () {
         return {visible: false};
@@ -28,6 +37,13 @@ var TopBar = React.createClass({
     componentDidMount: function () {
         //console.log('TopBar componentDidMount');
         AppStore.bind(AppEvents.toView.topBarVisible, this.setVisible);
+        var domNode = this.getDOMNode();
+        preventEventBubbleUp(domNode);
+        var h = new Hammer(domNode);
+        h.on('tap', function (ev) {
+            //console.log("topBar tap", ev);
+            AppDispacher.dispatchAction({event: AppEvents.fromView.topBarTap});
+        });
     },
     componentWillUnmount: function () {
         AppStore.unbind(AppEvents.toView.topBarVisible, this.setVisible);
@@ -64,6 +80,13 @@ var SideBar = React.createClass({
     componentDidMount: function () {
         //console.log('SideBar componentDidMount');
         AppStore.bind(AppEvents.toView.sideBarVisible, this.setVisible);
+        var domNode = this.getDOMNode();
+        preventEventBubbleUp(domNode);
+        var h = new Hammer(domNode, {domEvents: true});
+        h.on('swipeleft', function (ev) {
+            //console.log("swipeleft", ev);
+            AppDispacher.dispatchAction({event: AppEvents.fromView.globSwipe, direction: 'left'});
+        }.bind(this));
     },
     componentWillUnmount: function () {
         AppStore.unbind(AppEvents.toView.sideBarVisible, this.setVisible);
@@ -93,21 +116,21 @@ var App = React.createClass({
     navHideTimeoutId: null,
     componentDidMount: function () {
         var fromView = AppEvents.fromView;
-        var Hammer = require('hammerjs');
         var h = new Hammer(this.getDOMNode());
         h.get('swipe').set({
             threshold: 5,
             velocity: 0.1,
         });
-        h.on('swipeleft', function (event) {
-            //console.log("swipeleft", event);
+        h.on('swipeleft', function (ev) {
+            //console.log("swipeleft", ev);
             AppDispacher.dispatchAction({event: fromView.globSwipe, direction: 'left'});
         }.bind(this));
-        h.on('swiperight', function (event) {
-            //console.log("swiperight", event);
+        h.on('swiperight', function (ev) {
+            //console.log("swiperight", ev);
             AppDispacher.dispatchAction({event: fromView.globSwipe, direction: 'right'});
         }.bind(this));
-        h.on('tap', function (state) {
+        h.on('tap', function (ev) {
+            //console.log("App tap", ev);
             AppDispacher.dispatchAction({event: fromView.globTap});
         });
     },

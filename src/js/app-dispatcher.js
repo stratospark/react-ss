@@ -10,12 +10,15 @@ AppDispatcher.dispatchAction = function eventTrigger(payload) {
     switch (payload.event) {
         case fromView.globSwipe:
             this.dispatch({
-                action: actions.sideBar,
-                data: {open: payload.direction === 'right'}
+                action: actions.sideBarState,
+                state: (payload.direction === 'right' ? 'show' : 'hide')
             });
             break;
         case fromView.globTap:
-            this.dispatch({action: actions.topBar});
+            this.dispatch({action: actions.topBarState, state: 'toggle'});
+            break;
+        case fromView.topBarTap:
+            this.dispatch({action: actions.topBarState, state: 'show'});
             break;
         default:
             console.error('unknown event', payload.event);
