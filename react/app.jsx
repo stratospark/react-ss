@@ -5,40 +5,77 @@ var React = require('react'),
     About = require('./routes/About.jsx'),
     Names = require('./routes/Names.jsx');
 
-var Routes = require("react-router").Routes,
-    Route = require("react-router").Route,
-    DefaultRoute = require("react-router").DefaultRoute,
-    Link = require("react-router").Link;
-
+var Router = require("react-router");
+var Routes = Router.Routes,
+    Route = Router.Route,
+    DefaultRoute = Router.DefaultRoute,
+    Link = Router.Link;
 var Nav = require("react-bootstrap").Nav,
     Navbar = require("react-bootstrap").Navbar,
     NavItem = require("react-bootstrap").NavItem;
 var AppDispacher = require("../src/js/app-dispatcher");
 var AppStore = require("../src/js/app-store");
 var AppEvents = require('../src/js/app-events');
+var AppPageFrame = require("./components/AppPageFrame.jsx");
 
 var Hammer = typeof(document) !== "undefined" ? require('hammerjs') : null;
 
-function preventEventBubbleUp(domNode){
-    domNode.addEventListener('touchend', function(ev) {
-        // hack to keep the events from bubbling up
-        ev.stopPropagation();
-    });
-}
+var Contact = React.createClass({
+        render: function () {
+            return (
+                <AppPageFrame>
+                    <h2>Contact Us</h2>
+                    <p>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui dolorem ipsum, quia dolor sit amet consectetur adipisci[ng] velit, sed quia non numquam [do] eius modi tempora inci[di]dunt, ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, qui dolorem eum fugiat, quo voluptas nulla pariatur?</p>
+                </AppPageFrame>
+            );
+        }
+    }
+);
 
-var TopBar = React.createClass({
+var routesData = [
+    {title: "About", path: "about", handler: About, default: true},
+    {title: "Names", path: "names", handler: Names},
+    {title: "Contact", path: "contact", handler: Contact},
+];
+
+var barMixin = {
+    mixins: [Router.CurrentPath],
     getInitialState: function () {
         return {visible: false};
     },
     setVisible: function (state) {
-        //console.log('TopBar setVisible', state);
+        //console.log('setVisible', this.title, state);
         this.setState({visible: state});
     },
+    menuLinksGet: function () {
+        return routesData.map(function (route, index) {
+            // in case skipping active route is desired
+            //if (this.getCurrentPath() === ('/' + route.path)) {
+            //    return null;
+            //}
+            return (
+                <li key={index}>
+                    <Link to={route.path}>{route.title}</Link>
+                </li>
+            );
+        });
+    },
+    preventEventBubbleUp: function (domNode) {
+        domNode.addEventListener('touchend', function (ev) {
+            // hack to keep the events from bubbling up
+            ev.stopPropagation();
+        });
+    },
+};
+
+var TopBar = React.createClass({
+    title: 'topBar',
+    mixins: [barMixin],
     componentDidMount: function () {
         //console.log('TopBar componentDidMount');
         AppStore.bind(AppEvents.toView.topBarVisible, this.setVisible);
         var domNode = this.getDOMNode();
-        preventEventBubbleUp(domNode);
+        this.preventEventBubbleUp(domNode);
         var h = new Hammer(domNode);
         h.on('tap', function (ev) {
             //console.log("topBar tap", ev);
@@ -54,15 +91,7 @@ var TopBar = React.createClass({
         return (
             <Navbar staticTop={true} className={classes}>
                 <Nav bsStyle="pills" activeKey={1}>
-                    <li>
-                        <Link to="about">About</Link>
-                    </li>
-                    <li>
-                        <Link to="names">Names</Link>
-                    </li>
-                    <li>
-                        <Link to="contact">Contact</Link>
-                    </li>
+                { this.menuLinksGet() }
                 </Nav>
             </Navbar>
         );
@@ -70,18 +99,13 @@ var TopBar = React.createClass({
 });
 
 var SideBar = React.createClass({
-    getInitialState: function () {
-        return {visible: false};
-    },
-    setVisible: function (state) {
-        //console.log('SideBar setVisible', state);
-        this.setState({visible: state});
-    },
+    title: 'sideBar',
+    mixins: [barMixin],
     componentDidMount: function () {
         //console.log('SideBar componentDidMount');
         AppStore.bind(AppEvents.toView.sideBarVisible, this.setVisible);
         var domNode = this.getDOMNode();
-        preventEventBubbleUp(domNode);
+        this.preventEventBubbleUp(domNode);
         var h = new Hammer(domNode, {domEvents: true});
         h.on('swipeleft', function (ev) {
             //console.log("swipeleft", ev);
@@ -97,15 +121,7 @@ var SideBar = React.createClass({
         return (
             <div className={classes}>
                 <ul>
-                    <li>
-                        <Link to="about">About</Link>
-                    </li>
-                    <li>
-                        <Link to="names">Names</Link>
-                    </li>
-                    <li>
-                        <Link to="contact">Contact</Link>
-                    </li>
+                    { this.menuLinksGet() }
                 </ul>
             </div>
         );
@@ -151,35 +167,26 @@ var App = React.createClass({
                     <script src="/javascripts/bundle.js"></script>
                 </body>
             </html>
-        )
+        );
     }
 });
 
-var AppPageFrame = require("./components/AppPageFrame.jsx");
-
-var Contact = React.createClass({
-        render: function () {
-            return (
-                <AppPageFrame>
-                    <h2>Contact Us</h2>
-                    <p>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui dolorem ipsum, quia dolor sit amet consectetur adipisci[ng] velit, sed quia non numquam [do] eius modi tempora inci[di]dunt, ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, qui dolorem eum fugiat, quo voluptas nulla pariatur?</p>
-                </AppPageFrame>
-            );
-        }
-    }
-);
-
-var routes = (
-    <Routes location="history">
-        <Route name="app" path="/" handler={App}>
-            <Route name="about" handler={About} addHandlerKey={true}/>
-            <Route name="names" handler={Names} addHandlerKey={true} />
-            <Route name="contact" handler={Contact} addHandlerKey={true} />
-            <DefaultRoute handler={About} />
-        </Route>
-    </Routes>
-);
-
 module.exports = {
-    routes: routes
+    routes: function routesCreate() {
+        var defaultHandler;
+        var routeList = routesData.map(function (route, index) {
+            route.default && (defaultHandler = route.handler);
+            return (
+                <Route key={index} name={route.path} handler={route.handler}/>
+            );
+        });
+        routeList.push(<DefaultRoute key={routeList.length} handler={defaultHandler}/>);
+        return (
+            <Routes location="history">
+                <Route name="app" path="/" handler={App}>
+                    {routeList}
+                </Route>
+            </Routes>
+        );
+    }()
 };
