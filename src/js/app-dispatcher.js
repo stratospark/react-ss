@@ -16,9 +16,14 @@ AppDispatcher.dispatchAction = function eventTrigger(payload) {
             break;
         case fromView.globTap:
             this.dispatch({action: actions.topBarState, state: 'toggle'});
+            this.dispatch({action: actions.sideBarState, state: 'hide'});
             break;
         case fromView.topBarTap:
             this.dispatch({action: actions.topBarState, state: 'show'});
+            break;
+        case fromView.pageFrameMounted:
+            this.dispatch({action: actions.topBarState, state: 'hide'});
+            this.dispatch({action: actions.sideBarState, state: 'hide'});
             break;
         default:
             console.error('unknown event', payload.event);

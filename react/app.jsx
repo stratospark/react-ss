@@ -13,7 +13,7 @@ var Routes = Router.Routes,
 var Nav = require("react-bootstrap").Nav,
     Navbar = require("react-bootstrap").Navbar,
     NavItem = require("react-bootstrap").NavItem;
-var AppDispacher = require("../src/js/app-dispatcher");
+var AppDispatcher = require("../src/js/app-dispatcher");
 var AppStore = require("../src/js/app-store");
 var AppEvents = require('../src/js/app-events');
 var AppPageFrame = require("./components/AppPageFrame.jsx");
@@ -58,7 +58,7 @@ var barMixin = {
                     <Link to={route.path}>{route.title}</Link>
                 </li>
             );
-        });
+        }.bind(this));
     },
     preventEventBubbleUp: function (domNode) {
         domNode.addEventListener('touchend', function (ev) {
@@ -79,7 +79,7 @@ var TopBar = React.createClass({
         var h = new Hammer(domNode);
         h.on('tap', function (ev) {
             //console.log("topBar tap", ev);
-            AppDispacher.dispatchAction({event: AppEvents.fromView.topBarTap});
+            AppDispatcher.dispatchAction({event: AppEvents.fromView.topBarTap});
         });
     },
     componentWillUnmount: function () {
@@ -109,7 +109,7 @@ var SideBar = React.createClass({
         var h = new Hammer(domNode, {domEvents: true});
         h.on('swipeleft', function (ev) {
             //console.log("swipeleft", ev);
-            AppDispacher.dispatchAction({event: AppEvents.fromView.globSwipe, direction: 'left'});
+            AppDispatcher.dispatchAction({event: AppEvents.fromView.globSwipe, direction: 'left'});
         }.bind(this));
     },
     componentWillUnmount: function () {
@@ -139,15 +139,15 @@ var App = React.createClass({
         });
         h.on('swipeleft', function (ev) {
             //console.log("swipeleft", ev);
-            AppDispacher.dispatchAction({event: fromView.globSwipe, direction: 'left'});
+            AppDispatcher.dispatchAction({event: fromView.globSwipe, direction: 'left'});
         }.bind(this));
         h.on('swiperight', function (ev) {
             //console.log("swiperight", ev);
-            AppDispacher.dispatchAction({event: fromView.globSwipe, direction: 'right'});
+            AppDispatcher.dispatchAction({event: fromView.globSwipe, direction: 'right'});
         }.bind(this));
         h.on('tap', function (ev) {
             //console.log("App tap", ev);
-            AppDispacher.dispatchAction({event: fromView.globTap});
+            AppDispatcher.dispatchAction({event: fromView.globTap});
         });
     },
     render: function () {

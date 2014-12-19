@@ -3,13 +3,15 @@
 $pageBg: #f8f8e8;
 $pageAnimateTime: .3s;
 
-$menuOpacity: .8;
-$menuBg: rgba(#efe, $menuOpacity);
+$menuOpacity: .96;
+$menuBg: rgba(#fff, $menuOpacity);
 $menuFg: #131;
-$menuLinkBg: #aca;
-$menuBorder: #9b9;
-$menuActiveLinkBg: #cec;
+$menuLinkBg: #b0becc;
+$menuBorder: rgba(#aaa, .5);
+$menuActiveLinkBg: #e3eeee;
+$menuHoverLinkBg: #efffdf;
 $menuTransitionTime: .3s;
+$transparentColor: rgba(#000, 0);
 
 $navbarOpacity: $menuOpacity;
 $navbarTransitionTime: .5s;
@@ -31,12 +33,12 @@ ol {
 }
 
 .sidebar,
-.navbar.navbar-default.topbar {
+.navbar.topbar {
   position: fixed;
   transform: translateZ(0);
 }
 
-.navbar.navbar-default.topbar {
+.navbar.topbar {
   border-radius: 0;
   margin-bottom: 0;
   width: 100%;
@@ -51,14 +53,24 @@ ol {
   transition-delay: 0s;
 }
 
-.topbar-invisible {
+.topbar.topbar-invisible {
   visibility: hidden;
   opacity: 0;
-  transition: visibility 0s $navbarTransitionTime linear, opacity $navbarTransitionTime linear;
+  transition: visibility $navbarTransitionTime linear, opacity $navbarTransitionTime linear;
 }
 
-.navbar-default.topbar .navbar-nav > li > a {
+.navbar.topbar .navbar-nav > li > a {
   color: $menuFg;
+}
+
+.navbar.topbar .navbar-nav > li:hover > a.active,
+.navbar.topbar .navbar-nav > li > a.active {
+  opacity: 0.8;
+  background-color: $menuActiveLinkBg;
+}
+
+.navbar.topbar .navbar-nav > li:hover > a {
+  background-color: $menuHoverLinkBg;
 }
 
 .page-transition-enter {
@@ -90,40 +102,46 @@ ol {
 .sidebar {
   color: $menuFg;
   background: $menuBg;
-  position: absolute;
   width: 100%;
   max-width: $sidebarWidth;
-  height: 100%;
+  height: 120%;
   z-index: 1000;
   transition: left $sidebarTransitionTime ease-in-out;
   position: fixed;
 }
 
-.sidebar ul {
+.sidebar > ul {
   padding: 0;
   list-style: none;
   position: relative;
-  top: 50%;
+  top: 30%;
   transform: translateY(-50%);
 }
 
-.sidebar ul li {
+.sidebar > ul > li {
   margin: 10px;
 }
 
-.sidebar ul li a {
+.sidebar > ul > li > a {
   padding: 15px 20px;
   border: 1px solid $menuBorder;
   border-radius: 8px;
   text-decoration: none;
   color: $menuFg;
   transition: background $menuTransitionTime ease-in;
-  background: $menuLinkBg;
   display: block;
 }
 
-.sidebar ul li:hover a {
-  background: $menuActiveLinkBg;
+.sidebar > ul > li:hover > a.active,
+.sidebar > ul > li > a.active {
+  opacity: 0.8;
+  background-color: $menuActiveLinkBg;
+  border-color: $transparentColor;
+}
+
+.sidebar > ul > li:hover a {
+  background: $menuHoverLinkBg;
+  border-color: $transparentColor;
 }
 
 .sidebar-invisible {

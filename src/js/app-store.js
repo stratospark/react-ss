@@ -1,4 +1,4 @@
-var AppDispacher = require('./app-dispatcher');
+var AppDispatcher = require('./app-dispatcher');
 var actionEvents = require('./app-events').actions;
 var toViewEvents = require('./app-events').toView;
 
@@ -41,18 +41,18 @@ function barStateSet(args) {
 }
 
 function handleSideBarState(pl) {
-    if (AppStore.topBar.visible) {
+    barStateSet({
+        bar: AppStore.sideBar,
+        state: pl.state,
+        trig: toViewEvents.sideBarVisible
+    });
+    if (AppStore.sideBar.visible && AppStore.topBar.visible) {
         barStateSet({
             bar: AppStore.topBar,
             state: 'hide',
             trig: toViewEvents.topBarVisible,
         });
     }
-    barStateSet({
-        bar: AppStore.sideBar,
-        state: pl.state,
-        trig: toViewEvents.sideBarVisible
-    });
 }
 
 function handleTopBarState(pl) {
@@ -69,7 +69,7 @@ var handlers = {};
 handlers[actionEvents.sideBarState] = handleSideBarState;
 handlers[actionEvents.topBarState] = handleTopBarState;
 
-AppDispacher.register(function eventHandle(payload) {
+AppDispatcher.register(function eventHandle(payload) {
     //console.log('eventHandle', payload);
     var handler = handlers[payload.action];
     handler(payload);

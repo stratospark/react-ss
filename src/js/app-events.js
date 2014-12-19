@@ -12,6 +12,7 @@ AppEvents.fromView = objPropsAutoValueSet({
     globSwipe: null,
     globTap: null,
     topBarTap: null,
+    pageFrameMounted: null,
 }, 'fv_');
 
 AppEvents.actions = objPropsAutoValueSet({
