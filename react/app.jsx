@@ -12,6 +12,7 @@ var Routes = Router.Routes,
     Link = Router.Link;
 var Nav = require("react-bootstrap").Nav,
     Navbar = require("react-bootstrap").Navbar,
+    Glyphicon = require("react-bootstrap").Glyphicon,
     NavItem = require("react-bootstrap").NavItem;
 var AppDispatcher = require("../src/js/app-dispatcher");
 var AppStore = require("../src/js/app-store");
@@ -38,6 +39,13 @@ var routesData = [
     {title: "Contact", path: "contact", handler: Contact},
 ];
 
+function preventEventBubbleUp(domNode) {
+    domNode.addEventListener('touchend', function (ev) {
+        // hack to keep the events from bubbling up
+        ev.stopPropagation();
+    });
+}
+
 var barMixin = {
     mixins: [Router.CurrentPath],
     getInitialState: function () {
@@ -60,13 +68,37 @@ var barMixin = {
             );
         }.bind(this));
     },
-    preventEventBubbleUp: function (domNode) {
-        domNode.addEventListener('touchend', function (ev) {
-            // hack to keep the events from bubbling up
-            ev.stopPropagation();
+};
+
+var TopBarBtn = React.createClass({
+    getInitialState: function () {
+        return {visible: true};
+    },
+    setVisible: function (state) {
+        this.setState({visible: !state})
+    },
+    componentDidMount: function () {
+        //console.log('TopBar componentDidMount');
+        AppStore.bind(AppEvents.toView.topBarVisible, this.setVisible);
+        var domNode = this.getDOMNode();
+        preventEventBubbleUp(domNode);
+        var h = new Hammer(domNode);
+        h.on('tap', function (ev) {
+            //console.log("topBar tap", ev);
+            AppDispatcher.dispatchAction({event: AppEvents.fromView.topBarBtnTap});
         });
     },
-};
+    componentWillUnmount: function () {
+        AppStore.unbind(AppEvents.toView.topBarVisible, this.setVisible);
+    },
+    render: function () {
+        var classes = "topbar-btn";
+        classes += " " + (this.state.visible ? "topbar-btn-visible" : "topbar-btn-invisible");
+        return (
+            <Glyphicon glyph="th-list" className={classes}/>
+        );
+    }
+});
 
 var TopBar = React.createClass({
     title: 'topBar',
@@ -75,7 +107,7 @@ var TopBar = React.createClass({
         //console.log('TopBar componentDidMount');
         AppStore.bind(AppEvents.toView.topBarVisible, this.setVisible);
         var domNode = this.getDOMNode();
-        this.preventEventBubbleUp(domNode);
+        preventEventBubbleUp(domNode);
         var h = new Hammer(domNode);
         h.on('tap', function (ev) {
             //console.log("topBar tap", ev);
@@ -105,7 +137,7 @@ var SideBar = React.createClass({
         //console.log('SideBar componentDidMount');
         AppStore.bind(AppEvents.toView.sideBarVisible, this.setVisible);
         var domNode = this.getDOMNode();
-        this.preventEventBubbleUp(domNode);
+        preventEventBubbleUp(domNode);
         var h = new Hammer(domNode, {domEvents: true});
         h.on('swipeleft', function (ev) {
             //console.log("swipeleft", ev);
@@ -161,6 +193,7 @@ var App = React.createClass({
                 <body className="app-body" >
                     <TopBar/>
                     <SideBar/>
+                    <TopBarBtn/>
                     <CSSTransitionGroup transitionName="page-transition" className="app-page">
                         <this.props.activeRouteHandler/>
                     </CSSTransitionGroup>
