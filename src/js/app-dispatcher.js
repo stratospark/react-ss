@@ -4,6 +4,8 @@ var actions = appEvents.actions;
 var fromView = appEvents.fromView;
 
 var AppDispatcher = new Dispatcher();
+var pageFrameMountedTimeoutId = null;
+var topBarLingerTimeMs = 5000;
 
 AppDispatcher.dispatchAction = function eventTrigger(payload) {
     //console.log('eventTrigger', payload);
@@ -22,7 +24,14 @@ AppDispatcher.dispatchAction = function eventTrigger(payload) {
             this.dispatch({action: actions.topBarState, state: 'show'});
             break;
         case fromView.pageFrameMounted:
-            this.dispatch({action: actions.topBarState, state: 'hide'});
+            if (pageFrameMountedTimeoutId) {
+                window.clearTimeout(pageFrameMountedTimeoutId);
+                pageFrameMountedTimeoutId = null;
+            }
+            pageFrameMountedTimeoutId = window.setTimeout(function () {
+                this.dispatch({action: actions.topBarState, state: 'hide'});
+                pageFrameMountedTimeoutId = null;
+            }.bind(this), topBarLingerTimeMs);
             this.dispatch({action: actions.sideBarState, state: 'hide'});
             break;
         case fromView.topBarBtnTap:
