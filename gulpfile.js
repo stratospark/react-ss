@@ -8,6 +8,7 @@ var gulp = require("gulp"),
     sourcemaps = require("gulp-sourcemaps"),
     autoprefixer = require("gulp-autoprefixer"),
     log = require("gulp-util/lib/log"),
+    gulpCache = require('gulp-cached'),
     plumber = require("gulp-plumber");
 
 gulp.task("start", ["build-js", "scss", "watch-all"]);
@@ -28,6 +29,7 @@ gulp.task("nodemon", function (cb) {
 gulp.task("scss", function () {
     // TODO: only include sourcemaps in dev env, not prod.
     gulp.src("./scss/*.scss")
+        .pipe(gulpCache('scss run'))
         .pipe(plumber())
         .pipe(sourcemaps.init())
         .pipe(sass())
