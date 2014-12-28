@@ -9,6 +9,7 @@ var gulp = require("gulp"),
     autoprefixer = require("gulp-autoprefixer"),
     log = require("gulp-util/lib/log"),
     gulpCache = require('gulp-cached'),
+    uglify = require('gulp-uglify'),
     plumber = require("gulp-plumber");
 
 gulp.task("start", ["build-js", "scss", "watch-all"]);
@@ -51,7 +52,10 @@ gulp.task("build-js", function () {
             transform: ["reactify"],
             debug: true
         }))
+        .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(rename("bundle.js"))
+        .pipe(uglify())
+        .pipe(sourcemaps.write())
         .pipe(gulp.dest("public/javascripts"));
 });
 
