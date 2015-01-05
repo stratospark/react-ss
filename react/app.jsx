@@ -18,6 +18,8 @@ var AppDispatcher = require("../src/js/app-dispatcher");
 var AppStore = require("../src/js/app-store");
 var AppEvents = require('../src/js/app-events');
 var AppPageFrame = require("./components/AppPageFrame.jsx");
+var Login = require("./components/Login.jsx");
+var Logout = require("./components/Logout.jsx");
 
 var Hammer = typeof(document) !== "undefined" ? require('hammerjs') : null;
 
@@ -37,6 +39,8 @@ var routesData = [
     {title: "About", path: "about", handler: About, default: true},
     {title: "Names", path: "names", handler: Names},
     {title: "Contact", path: "contact", handler: Contact},
+    {title: "Login", path: "login", handler: Login},
+    {title: "Logout", path: "logout", handler: Logout},
 ];
 
 function preventEventBubbleUp(domNode) {
@@ -56,17 +60,26 @@ var barMixin = {
         this.setState({visible: state});
     },
     menuLinksGet: function () {
-        return routesData.map(function (route, index) {
+        var links = routesData.map(function (route, index) {
             // in case skipping active route is desired
             //if (this.getCurrentPath() === ('/' + route.path)) {
             //    return null;
             //}
+            if ((route.path == 'login' && AppStore.session) ||
+                (route.path == 'logout' && !AppStore.session)) {
+                return null;
+            }
             return (
                 <li key={index}>
                     <Link to={route.path}>{route.title}</Link>
                 </li>
             );
         }.bind(this));
+        links = links.filter(function (entry) {
+            return !!entry;
+        });
+        //console.log('menu links', links);
+        return links;
     },
 };
 
@@ -77,16 +90,17 @@ var TopBarBtn = React.createClass({
     setVisible: function (state) {
         this.setState({visible: !state})
     },
+    activate: function (ev) {
+        //console.log("topBar activate", ev);
+        AppDispatcher.dispatchAction({event: AppEvents.fromView.topBarActivate});
+    },
     componentDidMount: function () {
         //console.log('TopBar componentDidMount');
         AppStore.bind(AppEvents.toView.topBarVisible, this.setVisible);
         var domNode = this.getDOMNode();
         preventEventBubbleUp(domNode);
         var h = new Hammer(domNode);
-        h.on('tap', function (ev) {
-            //console.log("topBar tap", ev);
-            AppDispatcher.dispatchAction({event: AppEvents.fromView.topBarBtnTap});
-        });
+        h.on('tap', this.activate);
     },
     componentWillUnmount: function () {
         AppStore.unbind(AppEvents.toView.topBarVisible, this.setVisible);
@@ -95,7 +109,7 @@ var TopBarBtn = React.createClass({
         var classes = "topbar-btn";
         classes += " " + (this.state.visible ? "topbar-btn-visible" : "topbar-btn-invisible");
         return (
-            <Glyphicon glyph="th-list" className={classes}/>
+            <Glyphicon glyph="th-list" onClick={this.activate} className={classes}/>
         );
     }
 });

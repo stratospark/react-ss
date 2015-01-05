@@ -29,6 +29,7 @@
     "gulp-util": "^3.0.1",
     "hammerjs": "^2.0.4",
     "jade": "~1.6.0",
+    "jquery": "^2.1.3",
     "lodash": "^2.4.1",
     "microevent": "^1.0.0",
     "morgan": "~1.3.0",

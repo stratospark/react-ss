@@ -13,17 +13,23 @@ AppEvents.fromView = objPropsAutoValueSet({
     globTap: null,
     topBarTap: null,
     pageFrameMounted: null,
-    topBarBtnTap: null,
+    topBarActivate: null,
+    login: null,
+    logout: null,
 }, 'fv_');
 
 AppEvents.actions = objPropsAutoValueSet({
     sideBarState: null,
     topBarState: null,
+    login: null,
+    logout: null,
 }, 'act_');
 
 AppEvents.toView = objPropsAutoValueSet({
     sideBarVisible: null,
     topBarVisible: null,
+    loginReply: null,
+    logoutComplete: null,
 }, 'tv_');
 
 module.exports = AppEvents;

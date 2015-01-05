@@ -109,7 +109,7 @@ span.topbar-btn-invisible,
   width: 100%;
   // hack: TBD remove padding
   // page should scroll in the entire area excluding navbar
-  padding-top: 50px;
+  padding-top: 60px;
   //  prevent page background from showing
   min-height: 100%;
 }
@@ -165,4 +165,8 @@ span.topbar-btn-invisible,
 
 .sidebar-visible {
   left: 0;
+}
+
+.form-msg-box {
+  margin-top: 1em;
 }

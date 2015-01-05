@@ -34,8 +34,18 @@ AppDispatcher.dispatchAction = function eventTrigger(payload) {
             }.bind(this), topBarLingerTimeMs);
             this.dispatch({action: actions.sideBarState, state: 'hide'});
             break;
-        case fromView.topBarBtnTap:
+        case fromView.topBarActivate:
             this.dispatch({action: actions.topBarState, state: 'show'});
+            break;
+        case fromView.login:
+            if (payload.email && payload.psw) {
+                this.dispatch({action: actions.login, email: payload.email, psw: payload.psw});
+            } else {
+                console.log('skipping login, missing email or psw');
+            }
+            break;
+        case fromView.logout:
+            this.dispatch({action: actions.logout});
             break;
         default:
             console.error('unknown event', payload.event);

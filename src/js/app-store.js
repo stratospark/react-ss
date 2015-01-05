@@ -1,6 +1,7 @@
 var AppDispatcher = require('./app-dispatcher');
 var actionEvents = require('./app-events').actions;
 var toViewEvents = require('./app-events').toView;
+var $ = require('jquery');
 
 var AppStoreCtor = function () {
     this.topBar = {};
@@ -64,15 +65,67 @@ function handleTopBarState(pl) {
     });
 }
 
+function handleLogin(pl) {
+    //console.log('logging in', pl);
+    function success(data) {
+        //console.log('login reply', data);
+        if (data.sessionToken) {
+            AppStore.session = {
+                user: {email: pl.email},
+                token: data.sessionToken,
+            }
+        }
+        AppStore.trigger(toViewEvents.loginReply, !!data.sessionToken);
+    }
+
+    function error(hdr, str) {
+        console.log('error', hdr, str);
+    }
+
+    $.ajax({
+        type: 'POST',
+        url: '/api/login',
+        data: {email: pl.email, psw: pl.psw},
+        success: success,
+        error: error,
+    });
+}
+
+function handleLogout() {
+    if (!AppStore.session) {
+        return;
+    }
+    //console.log('logging out');
+    function success(data) {
+        //console.log('logout reply', data);
+        AppStore.session = null;
+        AppStore.trigger(toViewEvents.logoutComplete);
+    }
+
+    function error(hdr, str) {
+        console.log('error', hdr, str);
+    }
+
+    $.ajax({
+        type: 'POST',
+        url: '/api/logout',
+        data: {sessionToken: AppStore.session.token},
+        success: success,
+        error: error,
+    });
+}
+
 var handlers = {};
 
 handlers[actionEvents.sideBarState] = handleSideBarState;
 handlers[actionEvents.topBarState] = handleTopBarState;
+handlers[actionEvents.login] = handleLogin;
+handlers[actionEvents.logout] = handleLogout;
 
 AppDispatcher.register(function eventHandle(payload) {
     //console.log('eventHandle', payload);
     var handler = handlers[payload.action];
-    handler(payload);
+    handler ? handler(payload) : console.log('missing handler for action', payload.action);
     return true; // flux promise resolution
 });
 
