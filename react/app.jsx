@@ -5,129 +5,23 @@ var React = require('react'),
     About = require('./routes/About.jsx'),
     Names = require('./routes/Names.jsx');
 
-var Routes = require("react-router").Routes,
-    Route = require("react-router").Route,
-    DefaultRoute = require("react-router").DefaultRoute,
-    Link = require("react-router").Link;
-
+var Router = require("react-router");
+var Routes = Router.Routes,
+    Route = Router.Route,
+    DefaultRoute = Router.DefaultRoute,
+    Link = Router.Link;
 var Nav = require("react-bootstrap").Nav,
     Navbar = require("react-bootstrap").Navbar,
+    Glyphicon = require("react-bootstrap").Glyphicon,
     NavItem = require("react-bootstrap").NavItem;
-
-var TopBar = React.createClass({
-    render: function () {
-        var classes = "app-nav";
-        classes += " " + (this.props.show ? "bar-visible" : "bar-invisible");
-        return (
-            <Navbar staticTop={true} className={classes}>
-                <Nav bsStyle="pills" activeKey={1}>
-                    <li>
-                        <Link to="about">About</Link>
-                    </li>
-                    <li>
-                        <Link to="names">Names</Link>
-                    </li>
-                    <li>
-                        <Link to="contact">Contact</Link>
-                    </li>
-                </Nav>
-            </Navbar>
-        );
-    }
-});
-
-var SideBar = React.createClass({
-    render: function () {
-        var classes = "app-sidebar ";
-        classes += this.props.show ? "sidebar-visible" : "sidebar-invisible";
-        return (
-            <div className={classes}>
-                <ul>
-                    <li>
-                        <Link to="about">About</Link>
-                    </li>
-                    <li>
-                        <Link to="names">Names</Link>
-                    </li>
-                    <li>
-                        <Link to="contact">Contact</Link>
-                    </li>
-                </ul>
-            </div>
-        );
-    }
-});
-
-var App = React.createClass({
-    navHideTimeoutId: null,
-    getInitialState: function () {
-        return {
-            navbarVisible: false,
-            sidebarVisible: false
-        };
-    },
-    componentDidMount: function () {
-        var Hammer = require('hammerjs');
-        var h = new Hammer(this.getDOMNode());
-        h.get('swipe').set({
-            //direction: Hammer.DIRECTION_VERTICAL,
-            threshold: 5,
-            velocity: 0.1,
-            });
-        h.on('swipeleft', function (event) {
-            //console.log("swipeleft", event);
-            this.showSidebar(false);
-        }.bind(this));
-        h.on('swiperight', function (event) {
-            //console.log("swiperight", event);
-            this.showSidebar(true);
-        }.bind(this));
-        h.on('tap', this.toggleNav);
-        this.hammer = h;
-    },
-    toggleNav: function () {
-        console.log("toggle navbar");
-        if (this.state.navbarVisible) {
-            this.setState({navbarVisible: false});
-            console.log("hiding navbar");
-            if (this.navHideTimeoutId) {
-                window.clearTimeout(this.navHideTimeoutId);
-                this.navHideTimeoutId = null;
-            }
-        } else {
-            this.setState({navbarVisible: true});
-            this.navHideTimeoutId = setTimeout(function () {
-                this.navHideTimeoutId = null;
-                console.log("hiding navbar via timeout");
-                this.setState({navbarVisible: false});
-            }.bind(this), 10000);
-        }
-    },
-    showSidebar: function (state) {
-        this.setState({sidebarVisible: state});
-    },
-    render: function () {
-        return (
-            <html>
-                <head>
-                    <link rel="stylesheet" type="text/css" href="/stylesheets/styles.css"/>
-                    <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
-                    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-                </head>
-                <body className="app-body" >
-                    <TopBar show={this.state.navbarVisible} />
-                    <SideBar show={this.state.sidebarVisible}/>
-                    <CSSTransitionGroup transitionName="page-transition" className="app-page">
-                        <this.props.activeRouteHandler/>
-                    </CSSTransitionGroup>
-                    <script src="/javascripts/bundle.js"></script>
-                </body>
-            </html>
-        )
-    }
-});
-
+var AppDispatcher = require("../src/js/app-dispatcher");
+var AppStore = require("../src/js/app-store");
+var AppEvents = require('../src/js/app-events');
 var AppPageFrame = require("./components/AppPageFrame.jsx");
+var Login = require("./components/Login.jsx");
+var Logout = require("./components/Logout.jsx");
+
+var Hammer = typeof(document) !== "undefined" ? require('hammerjs') : null;
 
 var Contact = React.createClass({
         render: function () {
@@ -141,18 +35,205 @@ var Contact = React.createClass({
     }
 );
 
-var routes = (
-    <Routes location="history">
-        <Route name="app" path="/" handler={App}>
-            <Route name="about" handler={About} addHandlerKey={true}/>
-            <Route name="names" handler={Names} addHandlerKey={true} />
-            <Route name="contact" handler={Contact} addHandlerKey={true} />
-            <DefaultRoute handler={About} />
-        </Route>
-    </Routes>
-);
+var routesData = [
+    {title: "About", path: "about", handler: About, default: true},
+    {title: "Names", path: "names", handler: Names},
+    {title: "Contact", path: "contact", handler: Contact},
+    {title: "Login", path: "login", handler: Login},
+    {title: "Logout", path: "logout", handler: Logout},
+];
+
+function preventEventBubbleUp(domNode) {
+    domNode.addEventListener('touchend', function (ev) {
+        // hack to keep the events from bubbling up
+        ev.stopPropagation();
+    });
+}
+
+var barMixin = {
+    mixins: [Router.CurrentPath],
+    getInitialState: function () {
+        return {visible: false};
+    },
+    setVisible: function (state) {
+        //console.log('setVisible', this.title, state);
+        this.setState({visible: state});
+    },
+    menuLinksGet: function () {
+        var links = routesData.map(function (route, index) {
+            // in case skipping active route is desired
+            //if (this.getCurrentPath() === ('/' + route.path)) {
+            //    return null;
+            //}
+            if ((route.path == 'login' && AppStore.session) ||
+                (route.path == 'logout' && !AppStore.session)) {
+                return null;
+            }
+            return (
+                <li key={index}>
+                    <Link to={route.path}>{route.title}</Link>
+                </li>
+            );
+        }.bind(this));
+        links = links.filter(function (entry) {
+            return !!entry;
+        });
+        //console.log('menu links', links);
+        return links;
+    },
+};
+
+var TopBarBtn = React.createClass({
+    getInitialState: function () {
+        return {visible: true};
+    },
+    setVisible: function (state) {
+        this.setState({visible: !state})
+    },
+    activate: function (ev) {
+        //console.log("topBar activate", ev);
+        AppDispatcher.dispatchAction({event: AppEvents.fromView.topBarActivate});
+    },
+    componentDidMount: function () {
+        //console.log('TopBar componentDidMount');
+        AppStore.bind(AppEvents.toView.topBarVisible, this.setVisible);
+        var domNode = this.getDOMNode();
+        preventEventBubbleUp(domNode);
+        var h = new Hammer(domNode);
+        h.on('tap', this.activate);
+    },
+    componentWillUnmount: function () {
+        AppStore.unbind(AppEvents.toView.topBarVisible, this.setVisible);
+    },
+    render: function () {
+        var classes = "topbar-btn";
+        classes += " " + (this.state.visible ? "topbar-btn-visible" : "topbar-btn-invisible");
+        return (
+            <Glyphicon glyph="th-list" onClick={this.activate} className={classes}/>
+        );
+    }
+});
+
+var TopBar = React.createClass({
+    title: 'topBar',
+    mixins: [barMixin],
+    componentDidMount: function () {
+        //console.log('TopBar componentDidMount');
+        AppStore.bind(AppEvents.toView.topBarVisible, this.setVisible);
+        var domNode = this.getDOMNode();
+        preventEventBubbleUp(domNode);
+        var h = new Hammer(domNode);
+        h.on('tap', function (ev) {
+            //console.log("topBar tap", ev);
+            AppDispatcher.dispatchAction({event: AppEvents.fromView.topBarTap});
+        });
+    },
+    componentWillUnmount: function () {
+        AppStore.unbind(AppEvents.toView.topBarVisible, this.setVisible);
+    },
+    render: function () {
+        var classes = "topbar";
+        classes += " " + (this.state.visible ? "topbar-visible" : "topbar-invisible");
+        return (
+            <Navbar staticTop={true} className={classes}>
+                <Nav bsStyle="pills" activeKey={1}>
+                { this.menuLinksGet() }
+                </Nav>
+            </Navbar>
+        );
+    }
+});
+
+var SideBar = React.createClass({
+    title: 'sideBar',
+    mixins: [barMixin],
+    componentDidMount: function () {
+        //console.log('SideBar componentDidMount');
+        AppStore.bind(AppEvents.toView.sideBarVisible, this.setVisible);
+        var domNode = this.getDOMNode();
+        preventEventBubbleUp(domNode);
+        var h = new Hammer(domNode, {domEvents: true});
+        h.on('swipeleft', function (ev) {
+            //console.log("swipeleft", ev);
+            AppDispatcher.dispatchAction({event: AppEvents.fromView.globSwipe, direction: 'left'});
+        }.bind(this));
+    },
+    componentWillUnmount: function () {
+        AppStore.unbind(AppEvents.toView.sideBarVisible, this.setVisible);
+    },
+    render: function () {
+        var classes = "sidebar ";
+        classes += this.state.visible ? "sidebar-visible" : "sidebar-invisible";
+        return (
+            <div className={classes}>
+                <ul>
+                    { this.menuLinksGet() }
+                </ul>
+            </div>
+        );
+    }
+});
+
+var App = React.createClass({
+    navHideTimeoutId: null,
+    componentDidMount: function () {
+        var fromView = AppEvents.fromView;
+        var h = new Hammer(this.getDOMNode());
+        h.get('swipe').set({
+            threshold: 5,
+            velocity: 0.1,
+        });
+        h.on('swipeleft', function (ev) {
+            //console.log("swipeleft", ev);
+            AppDispatcher.dispatchAction({event: fromView.globSwipe, direction: 'left'});
+        }.bind(this));
+        h.on('swiperight', function (ev) {
+            //console.log("swiperight", ev);
+            AppDispatcher.dispatchAction({event: fromView.globSwipe, direction: 'right'});
+        }.bind(this));
+        h.on('tap', function (ev) {
+            //console.log("App tap", ev);
+            AppDispatcher.dispatchAction({event: fromView.globTap});
+        });
+    },
+    render: function () {
+        return (
+            <html>
+                <head>
+                    <link rel="stylesheet" type="text/css" href="/stylesheets/styles.css"/>
+                    <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+                    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+                </head>
+                <body className="app-body" >
+                    <TopBar/>
+                    <SideBar/>
+                    <TopBarBtn/>
+                    <CSSTransitionGroup transitionName="page-transition" className="app-page">
+                        <this.props.activeRouteHandler/>
+                    </CSSTransitionGroup>
+                    <script src="/javascripts/bundle.js"></script>
+                </body>
+            </html>
+        );
+    }
+});
 
 module.exports = {
-    App: App,
-    routes: routes
+    routes: function routesCreate() {
+        var defaultHandler;
+        var routeList = routesData.map(function (route, index) {
+            route.default && (defaultHandler = route.handler);
+            return (
+                <Route key={index} name={route.path} handler={route.handler}/>
+            );
+        });
+        routeList.push(<DefaultRoute key={routeList.length} handler={defaultHandler}/>);
+        return (
+            <Routes location="history">
+                <Route name="app" path="/" handler={App}>
+                    {routeList}
+                </Route>
+            </Routes>
+        );
+    }()
 };

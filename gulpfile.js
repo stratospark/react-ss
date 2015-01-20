@@ -8,6 +8,8 @@ var gulp = require("gulp"),
     sourcemaps = require("gulp-sourcemaps"),
     autoprefixer = require("gulp-autoprefixer"),
     log = require("gulp-util/lib/log"),
+    gulpCache = require('gulp-cached'),
+    uglify = require('gulp-uglify'),
     plumber = require("gulp-plumber");
 
 gulp.task("start", ["build-js", "scss", "watch-all"]);
@@ -18,7 +20,7 @@ gulp.task("nodemon", function (cb) {
     return nodemon({
         script: "bin/www",
         ext: "js jsx",
-        watch: ["react/*", "routes/*", "app.js"]
+        watch: ["react/*", "routes/*", "src/js", "app.js"]
     }).on("start", function onStart() {
         if (!called) cb();
         called = true;
@@ -28,6 +30,7 @@ gulp.task("nodemon", function (cb) {
 gulp.task("scss", function () {
     // TODO: only include sourcemaps in dev env, not prod.
     gulp.src("./scss/*.scss")
+        .pipe(gulpCache('scss run'))
         .pipe(plumber())
         .pipe(sourcemaps.init())
         .pipe(sass())
@@ -49,12 +52,15 @@ gulp.task("build-js", function () {
             transform: ["reactify"],
             debug: true
         }))
+        .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(rename("bundle.js"))
+        .pipe(uglify())
+        .pipe(sourcemaps.write())
         .pipe(gulp.dest("public/javascripts"));
 });
 
 gulp.task("browserify-watch", function () {
-    gulp.watch(["react/**/*.*", "browser/**/*.*"], ["build-js"]);
+    gulp.watch(["react/**/*.*", "browser/**/*.*", "src/js/**/*.js"], ["build-js"]);
 });
 
 gulp.task("browser-sync", function () {
